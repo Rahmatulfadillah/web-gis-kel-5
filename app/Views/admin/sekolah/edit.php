@@ -220,7 +220,7 @@
                     <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
                 <?php endif; ?>
                 
-                <form action="<?= base_url('/admin/sekolah/update/' . $sekolah['id']) ?>" method="post" id="formSekolah">
+                <form action="<?= base_url('/admin/sekolah/update/' . $sekolah['id']) ?>" method="post" id="formSekolah" enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     
                     <div class="row">
@@ -286,6 +286,33 @@
                         <div class="col-12 mb-3">
                             <label class="form-label">Alamat <span class="required-star">*</span></label>
                             <textarea name="alamat" class="form-control" rows="2" required><?= old('alamat', $sekolah['alamat']) ?></textarea>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Foto Sekolah</label>
+                            <?php if (!empty($sekolah['foto'])): ?>
+                                <div class="mb-2">
+                                    <img src="<?= base_url('uploads/sekolah/' . $sekolah['foto']) ?>" alt="Foto sekolah" style="max-height: 140px; object-fit: cover; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" name="foto" class="form-control" accept="image/*">
+                            <small class="text-muted">Biarkan kosong jika tidak ingin mengubah foto. Format JPG, PNG, atau WEBP. Maksimal 2MB.</small>
+                            <input type="hidden" name="foto_lama" value="<?= esc($sekolah['foto'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Visi</label>
+                            <textarea name="visi" class="form-control" rows="3" placeholder="Masukkan visi sekolah"><?= old('visi', $sekolah['visi'] ?? '') ?></textarea>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Misi</label>
+                            <textarea name="misi" class="form-control" rows="3" placeholder="Masukkan misi sekolah"><?= old('misi', $sekolah['misi'] ?? '') ?></textarea>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Kontak Admin</label>
+                            <input type="text" name="kontak_admin" class="form-control" value="<?= old('kontak_admin', $sekolah['kontak_admin'] ?? '') ?>" placeholder="Nomor telepon / email admin sekolah">
                         </div>
                     </div>
                     

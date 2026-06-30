@@ -176,11 +176,13 @@
                                 <i class="fas fa-school me-2"></i>Data Sekolah
                             </a>
                         </li>
+                        <?php if (!empty($is_super_admin)) : ?>
                         <li>
                             <a class="dropdown-item" href="<?= base_url('/admin/geojson') ?>">
                                 <i class="fas fa-map me-2"></i>GeoJSON Overlay
                             </a>
                         </li>
+                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="<?= base_url('/auth/logout') ?>">
@@ -212,11 +214,16 @@
                             <i class="fas fa-school me-2"></i>Data Sekolah
                         </a>
                     </li>
+                    <?php if (!empty($is_super_admin)) : ?>
                     <li class="nav-item">
                         <a href="<?= base_url('/admin/geojson') ?>" class="nav-link">
                             <i class="fas fa-map me-2"></i>GeoJSON Overlay
                         </a>
                     </li>
+                      <li class="nav-item"><a href="<?= base_url('/admin/users') ?>" class="nav-link"><i class="fas fa-users-cog me-2"></i>Manajemen Admin</a></li>
+                    <li class="nav-item"><a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link"><i class="fas fa-history me-2"></i>Log Aktivitas</a></li>
+                    <?php endif; ?>
+                    
                     <li class="nav-item mt-4">
                         <a href="<?= base_url('/auth/logout') ?>" class="nav-link text-danger">
                             <i class="fas fa-sign-out-alt me-2"></i>Logout
@@ -238,9 +245,11 @@
                         Total: <?= count($sekolah) ?> sekolah terdaftar
                     </small>
                 </div>
+                <?php if (!empty($is_super_admin)) : ?>
                 <a href="<?= base_url('/admin/sekolah/tambah') ?>" class="btn btn-primary mt-2 mt-sm-0">
                     <i class="fas fa-plus me-2"></i>Tambah Sekolah
                 </a>
+                <?php endif; ?>
             </div>
             
             <!-- Flash Messages dengan Toast -->
@@ -299,12 +308,14 @@
                                                aria-label="Edit sekolah <?= esc($s['nama_sekolah']) ?>">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            <?php if (!empty($is_super_admin)) : ?>
                                             <a href="#" 
                                                class="btn btn-sm btn-danger" 
                                                onclick="return confirmDelete('<?= base_url('/admin/sekolah/hapus/'.$s['id']) ?>')"
                                                aria-label="Hapus sekolah <?= esc($s['nama_sekolah']) ?>">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -315,9 +326,11 @@
                                             <i class="fas fa-school fa-4x text-muted d-block mb-3"></i>
                                             <h5 class="text-muted">Belum ada data sekolah</h5>
                                             <p class="text-muted">Mulai tambahkan data sekolah pertama Anda</p>
+                                            <?php if (!empty($is_super_admin)) : ?>
                                             <a href="<?= base_url('/admin/sekolah/tambah') ?>" class="btn btn-primary">
                                                 <i class="fas fa-plus me-2"></i>Tambah Sekolah
                                             </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

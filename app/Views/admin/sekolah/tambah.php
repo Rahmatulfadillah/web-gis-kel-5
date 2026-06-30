@@ -126,7 +126,7 @@
                     <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
                 <?php endif; ?>
                 
-                <form action="<?= base_url('/admin/sekolah/simpan') ?>" method="post" id="formSekolah">
+                <form action="<?= base_url('/admin/sekolah/simpan') ?>" method="post" id="formSekolah" enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     
                     <div class="row">
@@ -193,7 +193,26 @@
                             <label class="form-label">Alamat <span class="required-star">*</span></label>
                             <textarea name="alamat" class="form-control" rows="2" required placeholder="Masukkan alamat lengkap sekolah"></textarea>
                         </div>
-                   
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Foto Sekolah</label>
+                            <input type="file" name="foto" class="form-control" accept="image/*">
+                            <small class="text-muted">Format JPG, PNG, atau WEBP. Maksimal 2MB.</small>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Visi</label>
+                            <textarea name="visi" class="form-control" rows="3" placeholder="Masukkan visi sekolah"></textarea>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Misi</label>
+                            <textarea name="misi" class="form-control" rows="3" placeholder="Masukkan misi sekolah"></textarea>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Kontak Admin</label>
+                            <input type="text" name="kontak_admin" class="form-control" placeholder="Nomor telepon / email admin sekolah">
+                        </div>                   
                     
                     <!-- ============================================ -->
                     <!-- MAP PREMIUM -->

@@ -66,11 +66,13 @@ class Admin extends BaseController
         if ($role === 'admin_sekolah') {
             $schoolId = $userModel->getSekolahByAdmin($userId);
             $data['total_sekolah'] = $schoolId ? 1 : 0;
+            $data['total_tk'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'TK')->countAllResults();
             $data['total_sd'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'SD')->countAllResults();
             $data['total_smp'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'SMP')->countAllResults();
             $data['is_super_admin'] = false;
         } else {
             $data['total_sekolah'] = $sekolahModel->countAll();
+            $data['total_tk'] = $sekolahModel->where('jenjang', 'TK')->countAllResults();
             $data['total_sd'] = $sekolahModel->where('jenjang', 'SD')->countAllResults();
             $data['total_smp'] = $sekolahModel->where('jenjang', 'SMP')->countAllResults();
             $data['is_super_admin'] = true;
@@ -141,6 +143,17 @@ class Admin extends BaseController
 
         $sekolahModel = new SekolahModel();
         $userModel = new UserModel();
+
+        $foto = $this->request->getFile('foto');
+        $fotoName = null;
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $uploadPath = ROOTPATH . 'public/uploads/sekolah';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $fotoName = $foto->getRandomName();
+            $foto->move($uploadPath, $fotoName);
+        }
         
         // Data sekolah
         $dataSekolah = [
@@ -152,6 +165,10 @@ class Admin extends BaseController
             'kelurahan'      => $this->request->getPost('kelurahan'),
             'tahun_berdiri'  => $this->request->getPost('tahun_berdiri'),
             'alamat'         => $this->request->getPost('alamat'),
+            'foto'           => $fotoName,
+            'visi'           => $this->request->getPost('visi') ?: null,
+            'misi'           => $this->request->getPost('misi') ?: null,
+            'kontak_admin'   => $this->request->getPost('kontak_admin') ?: null,
             'latitude'       => $this->request->getPost('latitude'),
             'longitude'      => $this->request->getPost('longitude'),
         ];
@@ -256,6 +273,17 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('error', 'Semua kolom wajib bertanda bintang/krusial harus diisi!');
         }
         
+        $foto = $this->request->getFile('foto');
+        $fotoName = $this->request->getPost('foto_lama');
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $uploadPath = ROOTPATH . 'public/uploads/sekolah';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $fotoName = $foto->getRandomName();
+            $foto->move($uploadPath, $fotoName);
+        }
+
         $data = [
             'npsn'           => $this->request->getPost('npsn'),
             'nama_sekolah'   => $this->request->getPost('nama_sekolah'),
@@ -265,6 +293,10 @@ class Admin extends BaseController
             'kelurahan'      => $this->request->getPost('kelurahan'),
             'tahun_berdiri'  => $this->request->getPost('tahun_berdiri'),
             'alamat'         => $this->request->getPost('alamat'),
+            'foto'           => $fotoName ?: null,
+            'visi'           => $this->request->getPost('visi') ?: null,
+            'misi'           => $this->request->getPost('misi') ?: null,
+            'kontak_admin'   => $this->request->getPost('kontak_admin') ?: null,
             'latitude'       => $this->request->getPost('latitude'),
             'longitude'      => $this->request->getPost('longitude'),
         ];

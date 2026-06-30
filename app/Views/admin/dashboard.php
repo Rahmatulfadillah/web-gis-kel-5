@@ -42,8 +42,8 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="<?= base_url('/admin/dashboard') ?>"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                         <li><a class="dropdown-item" href="<?= base_url('/admin/sekolah') ?>"><i class="fas fa-school me-2"></i>Data Sekolah</a></li>
-                        <li><a class="dropdown-item" href="<?= base_url('/admin/geojson') ?>"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
                         <?php if (session()->get('role') === 'admin_super') : ?>
+                        <li><a class="dropdown-item" href="<?= base_url('/admin/geojson') ?>"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
                         <li><a class="dropdown-item" href="<?= base_url('/admin/users') ?>"><i class="fas fa-users-cog me-2"></i>Manajemen Admin</a></li>
                         <li><a class="dropdown-item" href="<?= base_url('/admin/activity-logs') ?>"><i class="fas fa-history me-2"></i>Log Aktivitas</a></li>
                         <?php endif; ?>
@@ -65,8 +65,8 @@
                 <ul class="nav flex-column">
                     <li class="nav-item"><a href="<?= base_url('/admin/dashboard') ?>" class="nav-link active"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                     <li class="nav-item"><a href="<?= base_url('/admin/sekolah') ?>" class="nav-link"><i class="fas fa-school me-2"></i>Data Sekolah</a></li>
-                    <li class="nav-item"><a href="<?= base_url('/admin/geojson') ?>" class="nav-link"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
                     <?php if (session()->get('role') === 'admin_super') : ?>
+                    <li class="nav-item"><a href="<?= base_url('/admin/geojson') ?>" class="nav-link"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
                     <li class="nav-item"><a href="<?= base_url('/admin/users') ?>" class="nav-link"><i class="fas fa-users-cog me-2"></i>Manajemen Admin</a></li>
                     <li class="nav-item"><a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link"><i class="fas fa-history me-2"></i>Log Aktivitas</a></li>
                     <?php endif; ?>
@@ -78,7 +78,7 @@
             <?php $currentRole = session()->get('role'); $roleLabel = $currentRole === 'admin_super' ? 'Super Admin' : 'Admin Sekolah'; $roleBadge = $currentRole === 'admin_super' ? 'danger' : 'primary'; ?>
             <div class="navbar-top d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard Admin</h4>
-                <div><a href="<?= base_url('/admin/sekolah/tambah') ?>" class="btn btn-primary btn-sm"><i class="fas fa-plus me-2"></i>Tambah Sekolah</a></div>
+                <div><?php if (session()->get('role') === 'admin_super') : ?><a href="<?= base_url('/admin/sekolah/tambah') ?>" class="btn btn-primary btn-sm"><i class="fas fa-plus me-2"></i>Tambah Sekolah</a><?php endif; ?></div>
             </div>
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">

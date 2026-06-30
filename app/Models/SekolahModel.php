@@ -9,15 +9,19 @@ class SekolahModel extends Model
     protected $table = 'sekolah';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'npsn', 
-        'nama_sekolah', 
-        'jenjang', 
-        'status', 
-        'akreditasi', 
-        'kelurahan', 
-        'tahun_berdiri', 
-        'alamat', 
-        'latitude', 
+        'npsn',
+        'nama_sekolah',
+        'jenjang',
+        'status',
+        'akreditasi',
+        'kelurahan',
+        'tahun_berdiri',
+        'alamat',
+        'foto',
+        'visi',
+        'misi',
+        'kontak_admin',
+        'latitude',
         'longitude'
     ];
     protected $useTimestamps = true;

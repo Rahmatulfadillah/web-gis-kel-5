@@ -17,6 +17,7 @@ $routes->setAutoRoute(false);
 $routes->get('/', 'Home::index');
 $routes->get('/peta', 'Sekolah::index');
 $routes->get('/peta/fullmap', 'Sekolah::fullmap');
+$routes->get('/sekolah/(:num)', 'Sekolah::detail/$1');
 $routes->get('/about', 'About::index');
 $routes->get('/kontak', 'Kontak::index');
 

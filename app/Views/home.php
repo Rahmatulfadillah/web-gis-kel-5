@@ -162,14 +162,20 @@
             margin: 0 !important;
             padding: 0 !important;
         }
-        .school-popup { min-width: 240px; max-width: 280px; }
-        .school-popup__header { padding: 14px 16px; color: white; background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .school-popup { min-width: 320px; max-width: 390px; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.12); }
+        .school-popup__image { width: 100%; height: 160px; object-fit: cover; display: block; background: linear-gradient(135deg, #e0f2fe, #f8fafc); }
+        .school-popup__header { padding: 14px 16px 12px; color: white; background: linear-gradient(135deg, #2563eb, #3b82f6); }
         .school-popup__title { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
-        .school-popup__badge { display: inline-block; margin-top: 8px; padding: 5px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.22); }
+        .school-popup__badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .school-popup__badge { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.22); color: #fff; }
         .school-popup__body { padding: 14px 16px 16px; background: #fff; }
-        .school-popup__row { display: flex; gap: 8px; align-items: flex-start; font-size: 0.85rem; color: #334155; margin-bottom: 8px; }
-        .school-popup__row i { color: #2563eb; margin-top: 3px; }
-        .school-popup__row strong { color: #0f172a; }
+        .school-popup__section { margin-bottom: 10px; }
+        .school-popup__label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: #2563eb; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .school-popup__text { font-size: 0.85rem; color: #334155; line-height: 1.45; }
+        .school-popup__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .school-popup__btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .school-popup__btn.secondary { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+        .school-popup__btn:hover { color: #fff; opacity: 0.95; }
         
         footer {
             background: var(--text-dark);
@@ -354,20 +360,32 @@
 
     function buildPopupContent(sekolah) {
         var jenjang = getJenjangLabel(sekolah);
-        var alamat = sekolah.alamat || '-';
-        var status = sekolah.status || '';
+        var alamat = sekolah.alamat || 'Alamat belum tersedia';
+        var status = sekolah.status || 'Belum ada status';
+        var akreditasi = sekolah.akreditasi || 'Belum ada akreditasi';
+        var visi = sekolah.visi || 'Belum ada visi';
+        var misi = sekolah.misi || 'Belum ada misi';
+        var kontak = sekolah.kontak_admin || 'Belum ada kontak';
+        var lat = sekolah.latitude || '-';
+        var lng = sekolah.longitude || '-';
         var color = getMarkerColor(jenjang);
-        var statusHtml = status ? '<div class="school-popup__row"><i class="fas fa-info-circle"></i><span><strong>Status:</strong> ' + status + '</span></div>' : '';
+        var foto = sekolah.foto ? '<?= base_url('uploads/sekolah') ?>/' + sekolah.foto : '<?= base_url('uploads/default-school.png') ?>';
+        var detailUrl = sekolah.id ? '<?= base_url('sekolah') ?>/' + sekolah.id : '#';
+        var mapsUrl = 'https://www.google.com/maps?q=' + lat + ',' + lng;
 
         return '<div class="school-popup">' +
+            '<img class="school-popup__image" src="' + foto + '" alt="' + (sekolah.nama_sekolah || 'Sekolah') + '" onerror="this.onerror=null;this.src=\'<?= base_url('uploads/default-school.png') ?>\';">' +
             '<div class="school-popup__header" style="background: linear-gradient(135deg, ' + color + ', #2563eb);">' +
                 '<h6 class="school-popup__title"><i class="fas fa-school"></i>' + (sekolah.nama_sekolah || '-') + '</h6>' +
-                '<span class="school-popup__badge">' + jenjang + '</span>' +
+                '<div class="school-popup__badges"><span class="school-popup__badge">' + jenjang + '</span><span class="school-popup__badge">Akreditasi ' + akreditasi + '</span></div>' +
             '</div>' +
             '<div class="school-popup__body">' +
-                '<div class="school-popup__row"><i class="fas fa-map-marker-alt"></i><span><strong>Alamat:</strong> ' + alamat + '</span></div>' +
-                statusHtml +
-                '<div class="school-popup__row"><i class="fas fa-location-arrow"></i><span><strong>Koordinat:</strong> ' + (sekolah.latitude || '-') + ', ' + (sekolah.longitude || '-') + '</span></div>' +
+                '<div class="school-popup__section"><div class="school-popup__label"><i class="fas fa-map-marker-alt"></i>Alamat</div><div class="school-popup__text">' + alamat + '</div></div>' +
+                '<div class="school-popup__section"><div class="school-popup__label"><i class="fas fa-bullseye"></i>Visi</div><div class="school-popup__text">' + visi + '</div></div>' +
+                '<div class="school-popup__section"><div class="school-popup__label"><i class="fas fa-book-open"></i>Misi</div><div class="school-popup__text">' + misi + '</div></div>' +
+                '<div class="school-popup__section"><div class="school-popup__label"><i class="fas fa-phone-alt"></i>Kontak Admin</div><div class="school-popup__text">' + kontak + '</div></div>' +
+                '<div class="school-popup__section"><div class="school-popup__label"><i class="fas fa-info-circle"></i>Status</div><div class="school-popup__text">' + status + '</div></div>' +
+                '<div class="school-popup__actions"><a class="school-popup__btn" href="' + detailUrl + '" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i>Detail Sekolah</a><a class="school-popup__btn secondary" href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-location-dot"></i>Google Maps</a></div>' +
             '</div>' +
         '</div>';
     }
@@ -447,9 +465,6 @@
         });
     }
 
-    // ============================================
-    // TAMPILKAN MARKER SETELAH DATA DIMUAT
-    // ============================================
     setTimeout(function() {
         createSchoolMarkers(sekolahData);
     }, 500);
