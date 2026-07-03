@@ -208,9 +208,17 @@
                             <i class="fas fa-map me-2"></i>GeoJSON Overlay
                         </a>
                     </li>
-                      <li class="nav-item"><a href="<?= base_url('/admin/users') ?>" class="nav-link"><i class="fas fa-users-cog me-2"></i>Manajemen Admin</a></li>
-                    <li class="nav-item"><a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link"><i class="fas fa-history me-2"></i>Log Aktivitas</a></li>
-                    <?php endif; ?>
+                     <li class="nav-item">
+                        <a href="<?= base_url('/admin/users') ?>" class="nav-link">
+                            <i class="fas fa-users-cog me-2"></i>Manajemen Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link">
+                            <i class="fas fa-history me-2"></i>Log Aktivitas
+                        </a>
+                    </li>
+                    
                     
                 </ul>
             </div>

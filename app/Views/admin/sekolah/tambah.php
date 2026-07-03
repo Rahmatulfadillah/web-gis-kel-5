@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: #f0f8ff; }
         
-        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: 100vh; color: white; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: 100vh; color: white; position: sticky; top: 0; }
         .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; border-radius: 10px; transition: all 0.3s; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2); color: white; }
         
@@ -104,7 +104,16 @@
                     <li class="nav-item"><a href="<?= base_url('/admin/dashboard') ?>" class="nav-link"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                     <li class="nav-item"><a href="<?= base_url('/admin/sekolah') ?>" class="nav-link active"><i class="fas fa-school me-2"></i>Data Sekolah</a></li>
                     <li class="nav-item"><a href="<?= base_url('/admin/geojson') ?>" class="nav-link"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
-                    <li class="nav-item mt-4"><a href="<?= base_url('/auth/logout') ?>" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/admin/users') ?>" class="nav-link">
+                            <i class="fas fa-users-cog me-2"></i>Manajemen Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link">
+                            <i class="fas fa-history me-2"></i>Log Aktivitas
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -268,9 +277,6 @@
                                         </div>
                                     </div>
                                     <div class="mt-2">
-                                        <div id="location-warning" class="text-danger mb-2 d-none" style="font-weight: 500; font-size: 13px;">
-                                            <i class="fas fa-exclamation-triangle me-1"></i> Lokasi sekolah harus berada di dalam area GeoJSON aktif!
-                                        </div>
                                         <small class="text-muted">
                                             <i class="fas fa-info-circle me-1"></i>
                                             Klik pada peta, geser marker, atau isi manual koordinat di atas
@@ -334,12 +340,12 @@
     var standardLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap & CARTO',
         subdomains: 'abcd',
-        maxZoom: 19
+        maxZoom: 11
     });
     
     var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri',
-        maxZoom: 19
+        maxZoom: 11
     });
     
     standardLayer.addTo(map);
@@ -444,29 +450,17 @@
         });
     }
 
-    function showLocationWarning(show) {
-        var warningEl = document.getElementById('location-warning');
-        if (warningEl) {
-            if (show) {
-                warningEl.classList.remove('d-none');
-            } else {
-                warningEl.classList.add('d-none');
-            }
-        }
-    }
-
     function setMarkerPosition(lat, lng, showMessage) {
         if (isLocationInsideActiveGeojson(lat, lng)) {
             marker.setLatLng([lat, lng]);
             map.setView([lat, lng], 15);
             updateCoordinates(lat, lng);
             lastValidLatLng = L.latLng(lat, lng);
-            showLocationWarning(false);
             return true;
         }
 
         if (showMessage !== false) {
-            showLocationWarning(true);
+            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
 
         marker.setLatLng(lastValidLatLng);
@@ -629,11 +623,7 @@
 
         if (!isLocationInsideActiveGeojson(lat, lng)) {
             e.preventDefault();
-            showLocationWarning(true);
-            var warningEl = document.getElementById('location-warning');
-            if (warningEl) {
-                warningEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
     });
 </script>
