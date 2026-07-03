@@ -271,9 +271,7 @@
                     <a href="<?= base_url('/admin/dashboard') ?>" class="btn btn-back-custom me-2">
                         <i class="fas fa-arrow-left me-2"></i>Kembali
                     </a>
-                    <a href="<?= base_url('/admin/geojson/tambah') ?>" class="btn btn-primary-custom">
-                        <i class="fas fa-plus me-2"></i>Tambah GeoJSON
-                    </a>
+                  
                 </div>
             </div>
 
@@ -299,32 +297,6 @@
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($scannedFiles)) : ?>
-                <div class="alert alert-secondary" role="alert">
-                    <h6 class="mb-2">Hasil Scan GeoJSON</h6>
-                    <ul class="mb-0">
-                        <?php foreach ($scannedFiles as $file) : ?>
-                            <li>
-                                <?= esc($file['filename']) ?>
-                                <span class="badge bg-<?= $file['status'] === 'new' ? 'success' : 'secondary' ?> ms-2">
-                                    <?= $file['status'] === 'new' ? 'Baru ditambahkan' : 'Sudah terdaftar' ?>
-                                </span>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
-            <!-- Table -->
-            <div class="card card-shadow">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <div class="mb-3 d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Scan folder <code>public/geojson</code> untuk menambahkan berkas GeoJSON baru ke konfigurasi.</span>
-                            <a href="<?= base_url('/admin/geojson/scan') ?>" class="btn btn-sm btn-primary">
-                                <i class="fas fa-search me-1"></i> Scan GeoJSON
-                            </a>
-                        </div>
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
