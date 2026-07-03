@@ -163,13 +163,15 @@
                 <li class="nav-item dropdown ms-2">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-1"></i> 
-                        <?= esc(session()->get('nama_lengkap')) ?> <!-- DIPERBAIKI: dengan esc() -->
+                        <?= esc(session()->get('nama_lengkap')) ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        
-                       
                         <?php if (!empty($is_super_admin)) : ?>
-                        
+                        <li>
+                            <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
+                                <i class="fas fa-users-cog me-2"></i>Kelola Admin
+                            </a>
+                        </li>
                         <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -208,7 +210,7 @@
                             <i class="fas fa-map me-2"></i>GeoJSON Overlay
                         </a>
                     </li>
-                     <li class="nav-item">
+                    <li class="nav-item">
                         <a href="<?= base_url('/admin/users') ?>" class="nav-link">
                             <i class="fas fa-users-cog me-2"></i>Manajemen Admin
                         </a>
@@ -218,8 +220,7 @@
                             <i class="fas fa-history me-2"></i>Log Aktivitas
                         </a>
                     </li>
-                    
-                    
+                    <?php endif; ?> <!-- PERBAIKAN: endif ditambahkan di sini -->
                 </ul>
             </div>
         </div>
@@ -283,7 +284,6 @@
                                         <td><?= esc($s['npsn']) ?></td>
                                         <td><?= esc($s['nama_sekolah']) ?></td>
                                         <td>
-                                            <!-- DIPERBAIKI: Logika badge yang benar -->
                                             <span class="badge <?= 
                                                 $s['jenjang'] == 'TK' ? 'badge-tk' : 
                                                 ($s['jenjang'] == 'SD' ? 'badge-sd' : 
