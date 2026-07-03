@@ -561,10 +561,14 @@ function initMap() {
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap & CARTO',
         subdomains: 'abcd',
-        maxZoom: 19
+        maxZoom: 11
     }).addTo(map);
     
     L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 200);
 }
 
 function updateGlobalStats(data) {
@@ -724,7 +728,12 @@ function createMarkers(data) {
     if (markers.length > 0) {
         const group = L.featureGroup(markers);
         map.fitBounds(group.getBounds().pad(0.1));
+    } else {
+        map.setView([-0.5732, 100.8123], 13);
     }
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 200);
 }
 
 function filterSekolah(filter) {
@@ -738,7 +747,7 @@ function filterSekolah(filter) {
         filteredData = sekolahData.filter(s => getJenjangLabel(s) === filter);
     }
     displaySekolahList(filteredData);
-    createMarkers(sekolahData);
+    createMarkers(filteredData);
 }
 
 function focusMarkerDirect(lat, lng) {
@@ -757,31 +766,18 @@ function focusMarkerDirect(lat, lng) {
 function loadGeojsonOverlay() {
     if (!geojsonLayers || geojsonLayers.length === 0) return;
     var baseUrl = '<?= rtrim(base_url(), '/') ?>';
-    var overlayBounds = null;
-
-    function resolveGeojsonUrl(filePath) {
-        if (!filePath) return '';
-        var normalized = filePath.replace(/\\/g, '/').replace(/^\/+/,'');
-        normalized = normalized.replace(/^public\//i, '');
-        return /^https?:\/\//i.test(normalized) ? normalized : baseUrl + '/' + normalized;
-    }
-
     geojsonLayers.forEach(function(layerConfig) {
-        var url = resolveGeojsonUrl(layerConfig.file_path);
-        if (!url) {
-            return console.warn('GeoJSON file_path kosong:', layerConfig);
-        }
-        console.log('Memuat GeoJSON:', url);
-
+        if (!layerConfig || !layerConfig.file_path) return;
+        var url = baseUrl.replace(/\/+$/, '') + '/' + layerConfig.file_path.replace(/^\/+/, '');
         fetch(url)
             .then(function(res) {
                 if (!res.ok) {
-                    throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                    throw new Error('HTTP error ' + res.status);
                 }
                 return res.json();
             })
             .then(function(data) {
-                var layer = L.geoJSON(data, {
+                L.geoJSON(data, {
                     style: {
                         color: layerConfig.stroke_color || '#1e293b',
                         weight: Number(layerConfig.stroke_width) || 2,
@@ -789,37 +785,38 @@ function loadGeojsonOverlay() {
                         fillOpacity: Number(layerConfig.fill_opacity) || 0.4,
                     }
                 }).addTo(map);
-
-                if (layer.getBounds && layer.getBounds().isValid()) {
-                    overlayBounds = overlayBounds ? overlayBounds.extend(layer.getBounds()) : layer.getBounds();
-                    if (markers.length > 0) {
-                        var markerGroup = L.featureGroup(markers);
-                        if (markerGroup.getBounds && markerGroup.getBounds().isValid()) {
-                            var combined = markerGroup.getBounds().extend(overlayBounds);
-                            map.fitBounds(combined.pad(0.1));
-                            return;
-                        }
-                    }
-                    map.fitBounds(overlayBounds.pad(0.1));
-                }
             })
-            .catch(function(error) { console.warn('Gagal memuat GeoJSON:', layerConfig.file_path, error.message); });
+            .catch(function(err) {
+                console.warn('Gagal memuat GeoJSON:', layerConfig.file_path, err);
+            });
     });
 }
 
-document.querySelectorAll('.btn-filter').forEach(btn => {
-    btn.addEventListener('click', function() {
-        filterSekolah(this.dataset.filter);
+function initializePage() {
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterSekolah(this.dataset.filter);
+        });
     });
+
+    initMap();
+    setTimeout(() => {
+        updateGlobalStats(sekolahData);
+        displaySekolahList(sekolahData);
+        createMarkers(sekolahData);
+        loadGeojsonOverlay();
+    }, 500);
+}
+
+window.addEventListener('load', function() {
+    initializePage();
 });
 
-initMap();
-setTimeout(() => {
-    updateGlobalStats(sekolahData);
-    displaySekolahList(sekolahData);
-    createMarkers(sekolahData);
-    setTimeout(() => { loadGeojsonOverlay(); }, 600);
-}, 500);
+window.addEventListener('resize', function() {
+    if (map) {
+        map.invalidateSize();
+    }
+});
 </script>
 
 </body>

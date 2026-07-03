@@ -52,7 +52,8 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     
     // ========== GEOJSON ==========
     $routes->get('geojson', 'Geojson::index');
-    $routes->get('geojson/tambah', 'Geojson::tambah');
+$routes->get('geojson/scan', 'Geojson::scan');
+$routes->get('geojson/toggle/(:num)', 'Geojson::toggle/$1');
     $routes->post('geojson/simpan', 'Geojson::simpan');
     $routes->get('geojson/edit/(:num)', 'Geojson::edit/$1');
     $routes->post('geojson/update/(:num)', 'Geojson::update/$1');

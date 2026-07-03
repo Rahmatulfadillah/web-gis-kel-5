@@ -8,32 +8,62 @@ class AddSchoolPopupFields extends Migration
 {
     public function up()
     {
-        $fields = [
-            'foto' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-                'null' => true,
-            ],
-            'visi' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'misi' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'kontak_admin' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-                'null' => true,
-            ],
-        ];
+        $fields = [];
 
-        $this->forge->addColumn('sekolah', $fields);
+        if (!$this->db->fieldExists('foto', 'sekolah')) {
+            $fields['foto'] = [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ];
+        }
+
+        if (!$this->db->fieldExists('visi', 'sekolah')) {
+            $fields['visi'] = [
+                'type' => 'TEXT',
+                'null' => true,
+            ];
+        }
+
+        if (!$this->db->fieldExists('misi', 'sekolah')) {
+            $fields['misi'] = [
+                'type' => 'TEXT',
+                'null' => true,
+            ];
+        }
+
+        if (!$this->db->fieldExists('kontak_admin', 'sekolah')) {
+            $fields['kontak_admin'] = [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ];
+        }
+
+        if (!empty($fields)) {
+            $this->forge->addColumn('sekolah', $fields);
+        }
     }
 
     public function down()
     {
-        $this->forge->dropColumn('sekolah', ['foto', 'visi', 'misi', 'kontak_admin']);
+        $columns = [];
+
+        if ($this->db->fieldExists('foto', 'sekolah')) {
+            $columns[] = 'foto';
+        }
+        if ($this->db->fieldExists('visi', 'sekolah')) {
+            $columns[] = 'visi';
+        }
+        if ($this->db->fieldExists('misi', 'sekolah')) {
+            $columns[] = 'misi';
+        }
+        if ($this->db->fieldExists('kontak_admin', 'sekolah')) {
+            $columns[] = 'kontak_admin';
+        }
+
+        if (!empty($columns)) {
+            $this->forge->dropColumn('sekolah', $columns);
+        }
     }
 }
