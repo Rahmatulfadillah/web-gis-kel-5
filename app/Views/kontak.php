@@ -42,47 +42,31 @@
         .navbar {
             background: var(--white) !important;
             box-shadow: var(--shadow);
-            padding: 15px 0;
-            transition: all 0.3s;
-        }
-        .navbar.scrolled {
-            padding: 10px 0;
+            padding: 12px 0;
         }
         .navbar-brand {
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--primary) !important;
-            letter-spacing: -0.5px;
-        }
-        .navbar-brand i {
-            color: var(--primary);
         }
         .nav-link {
             font-weight: 500;
-            font-size: 0.95rem;
             margin: 0 8px;
             color: var(--text-dark) !important;
-            transition: all 0.3s;
-            position: relative;
         }
         .nav-link:hover,
         .nav-link.active {
             color: var(--primary) !important;
         }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: width 0.3s;
+        .dropdown-menu {
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: none;
+            margin-top: 10px;
         }
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 80%;
+        .dropdown-item:hover {
+            background: #eff6ff;
+            color: var(--primary);
         }
         
         /* Page Header */
@@ -298,42 +282,39 @@
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="navbar">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
         <a class="navbar-brand" href="<?= base_url('/') ?>">
-            <i class="fas fa-school me-2"></i>
-            <strong>EduMap Lintau Buo</strong>
+            <i class="fas fa-school me-2"></i><strong>EduMap Lintau Buo</strong>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/') ?>">
-                        <i class="fas fa-home me-1"></i> Beranda
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/peta') ?>">
-                        <i class="fas fa-map-marked-alt me-1"></i> Peta Sekolah
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/about') ?>">
-                        <i class="fas fa-info-circle me-1"></i> Tentang
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="<?= base_url('/kontak') ?>">
-                        <i class="fas fa-envelope me-1"></i> Kontak
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/auth/login') ?>">
-                        <i class="fas fa-sign-in-alt me-1"></i> Login
-                    </a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="<?= base_url('/') ?>"><i class="fas fa-home me-1"></i>Beranda</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= base_url('/peta') ?>"><i class="fas fa-map-marked-alt me-1"></i>Peta Sekolah</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= base_url('/about') ?>"><i class="fas fa-info-circle me-1"></i>Tentang</a></li>
+                <li class="nav-item"><a class="nav-link active" href="<?= base_url('/kontak') ?>"><i class="fas fa-envelope me-1"></i>Kontak</a></li>
+                <?php if(session()->get('isLoggedIn')): ?>
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" style="gap: 5px;">
+                            <i class="fas fa-user-circle me-1" style="font-size: 1.2rem;"></i>
+                            <?= session()->get('nama_lengkap') ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="<?= base_url('/admin/dashboard') ?>"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="<?= base_url('/auth/logout') ?>"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link btn btn-primary text-white px-3 py-1 rounded-pill" href="<?= base_url('/auth/login') ?>" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>

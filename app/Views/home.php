@@ -195,9 +195,7 @@
 <!-- Navbar Dinamis -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="<?= base_url('/') ?>">
-            <i class="fas fa-school me-2"></i><strong> Dinas Pendidikan Kabupaten Tanah Datar</strong>
-        </a>
+        <a class="navbar-brand" href="<?= base_url('/') ?>"><i class="fas fa-school me-2"></i><strong>EduMap Lintau Buo</strong></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>

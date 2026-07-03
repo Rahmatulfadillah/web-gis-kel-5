@@ -420,8 +420,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="<?= base_url('/admin/dashboard') ?>"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('/admin/profil') ?>"><i class="fas fa-user-circle me-2"></i>Profil Saya</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('/admin/ganti_password') ?>"><i class="fas fa-key me-2"></i>Ganti Password</a></li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="<?= base_url('/auth/logout') ?>"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
@@ -561,14 +560,10 @@ function initMap() {
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap & CARTO',
         subdomains: 'abcd',
-        maxZoom: 11
+        maxZoom: 19
     }).addTo(map);
     
     L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
-
-    setTimeout(function() {
-        map.invalidateSize();
-    }, 200);
 }
 
 function updateGlobalStats(data) {
@@ -728,12 +723,7 @@ function createMarkers(data) {
     if (markers.length > 0) {
         const group = L.featureGroup(markers);
         map.fitBounds(group.getBounds().pad(0.1));
-    } else {
-        map.setView([-0.5732, 100.8123], 13);
     }
-    setTimeout(function() {
-        map.invalidateSize();
-    }, 200);
 }
 
 function filterSekolah(filter) {
@@ -747,7 +737,7 @@ function filterSekolah(filter) {
         filteredData = sekolahData.filter(s => getJenjangLabel(s) === filter);
     }
     displaySekolahList(filteredData);
-    createMarkers(filteredData);
+    createMarkers(sekolahData);
 }
 
 function focusMarkerDirect(lat, lng) {
@@ -767,15 +757,8 @@ function loadGeojsonOverlay() {
     if (!geojsonLayers || geojsonLayers.length === 0) return;
     var baseUrl = '<?= rtrim(base_url(), '/') ?>';
     geojsonLayers.forEach(function(layerConfig) {
-        if (!layerConfig || !layerConfig.file_path) return;
-        var url = baseUrl.replace(/\/+$/, '') + '/' + layerConfig.file_path.replace(/^\/+/, '');
-        fetch(url)
-            .then(function(res) {
-                if (!res.ok) {
-                    throw new Error('HTTP error ' + res.status);
-                }
-                return res.json();
-            })
+        fetch(baseUrl + '/' + layerConfig.file_path)
+            .then(function(res) { return res.json(); })
             .then(function(data) {
                 L.geoJSON(data, {
                     style: {
@@ -786,37 +769,23 @@ function loadGeojsonOverlay() {
                     }
                 }).addTo(map);
             })
-            .catch(function(err) {
-                console.warn('Gagal memuat GeoJSON:', layerConfig.file_path, err);
-            });
+            .catch(function() { console.warn('Gagal memuat GeoJSON:', layerConfig.file_path); });
     });
 }
 
-function initializePage() {
-    document.querySelectorAll('.btn-filter').forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterSekolah(this.dataset.filter);
-        });
+document.querySelectorAll('.btn-filter').forEach(btn => {
+    btn.addEventListener('click', function() {
+        filterSekolah(this.dataset.filter);
     });
-
-    initMap();
-    setTimeout(() => {
-        updateGlobalStats(sekolahData);
-        displaySekolahList(sekolahData);
-        createMarkers(sekolahData);
-        loadGeojsonOverlay();
-    }, 500);
-}
-
-window.addEventListener('load', function() {
-    initializePage();
 });
 
-window.addEventListener('resize', function() {
-    if (map) {
-        map.invalidateSize();
-    }
-});
+initMap();
+setTimeout(() => {
+    updateGlobalStats(sekolahData);
+    displaySekolahList(sekolahData);
+    createMarkers(sekolahData);
+    setTimeout(() => { loadGeojsonOverlay(); }, 600);
+}, 500);
 </script>
 
 </body>
