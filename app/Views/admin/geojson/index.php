@@ -301,10 +301,39 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($scanMessage)) : ?>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle me-2"></i><?= esc($scanMessage) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($scannedFiles)) : ?>
+                <div class="alert alert-secondary" role="alert">
+                    <h6 class="mb-2">Hasil Scan GeoJSON</h6>
+                    <ul class="mb-0">
+                        <?php foreach ($scannedFiles as $file) : ?>
+                            <li>
+                                <?= esc($file['filename']) ?>
+                                <span class="badge bg-<?= $file['status'] === 'new' ? 'success' : 'secondary' ?> ms-2">
+                                    <?= $file['status'] === 'new' ? 'Baru ditambahkan' : 'Sudah terdaftar' ?>
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
             <!-- Table -->
             <div class="card card-shadow">
                 <div class="card-body">
                     <div class="table-responsive">
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Scan folder <code>public/geojson</code> untuk menambahkan berkas GeoJSON baru ke konfigurasi.</span>
+                            <a href="<?= base_url('/admin/geojson/scan') ?>" class="btn btn-sm btn-primary">
+                                <i class="fas fa-search me-1"></i> Scan GeoJSON
+                            </a>
+                        </div>
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
@@ -352,6 +381,10 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-2 flex-wrap">
+                                                    <a href="<?= base_url('/admin/geojson/toggle/' . $item['id']) ?>" class="btn btn-sm <?= $item['is_active'] ? 'btn-secondary' : 'btn-success' ?>">
+                                                        <i class="fas <?= $item['is_active'] ? 'fa-eye-slash' : 'fa-eye' ?> me-1"></i>
+                                                        <?= $item['is_active'] ? 'Nonaktifkan' : 'Aktifkan' ?>
+                                                    </a>
                                                     <a href="<?= base_url('/admin/geojson/edit/' . $item['id']) ?>" class="btn btn-sm btn-warning">
                                                         <i class="fas fa-edit me-1"></i> Ubah
                                                     </a>

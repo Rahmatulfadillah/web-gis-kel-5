@@ -17,6 +17,16 @@ class Geojson extends BaseController
         return null;
     }
 
+    private function checkSuperAdmin()
+    {
+        $role = session()->get('role');
+        if (!session()->get('isLoggedIn') || $role !== 'admin_super') {
+            return redirect()->to('/auth/login')->with('error', 'Akses hanya untuk Super Admin!');
+        }
+
+        return null;
+    }
+
     public function index()
     {
         $redirect = $this->checkAccess();
@@ -134,6 +144,112 @@ class Geojson extends BaseController
         } else {
             return redirect()->back()->with('error', 'Gagal mengupdate GeoJSON!');
         }
+    }
+
+    public function scan()
+    {
+        $redirect = $this->checkSuperAdmin();
+        if ($redirect) {
+            return $redirect;
+        }
+
+        $geojsonDir = ROOTPATH . 'public/geojson';
+        $model = new GeojsonConfigModel();
+        $inserted = 0;
+        $scannedFiles = [];
+
+        if (is_dir($geojsonDir)) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($geojsonDir, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $fileInfo) {
+                if ($fileInfo->isFile() && strtolower($fileInfo->getExtension()) === 'geojson') {
+                    $relativePath = str_replace('\\', '/', ltrim(str_replace($geojsonDir, '', $fileInfo->getPathname()), DIRECTORY_SEPARATOR));
+                    $relativePath = ltrim($relativePath, '/');
+                    $filePath = 'geojson/' . $relativePath;
+                    $exists = $model->where('file_path', $filePath)->first();
+
+                    $scannedFiles[] = [
+                        'filename' => $relativePath,
+                        'file_path' => $filePath,
+                        'status' => $exists ? 'exists' : 'new',
+                    ];
+
+                    if (!$exists) {
+                        $model->insert([
+                            'nama' => pathinfo($relativePath, PATHINFO_FILENAME),
+                            'file_path' => $filePath,
+                            'is_active' => 0,
+                            'warna' => '#2563eb',
+                            'fill_opacity' => 0.5,
+                            'stroke_color' => '#1e293b',
+                            'stroke_width' => 2,
+                        ]);
+                        $inserted++;
+                    }
+                }
+            }
+        }
+
+        if ($inserted > 0) {
+            $logModel = new ActivityLogModel();
+            $logModel->insert([
+                'user_id' => session()->get('user_id'),
+                'admin_name' => session()->get('nama_lengkap'),
+                'action' => 'scan',
+                'entity_type' => 'geojson',
+                'entity_id' => null,
+                'description' => 'Memindai folder GeoJSON dan menambahkan ' . $inserted . ' file baru',
+                'ip_address' => $this->request->getIPAddress(),
+                'user_agent' => $this->request->getUserAgent()->getAgentString(),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        $data['geojson'] = $model->orderBy('id', 'DESC')->findAll();
+        $data['scannedFiles'] = $scannedFiles;
+        $data['scanMessage'] = 'Scan selesai. ' . $inserted . ' file GeoJSON baru ditambahkan.';
+        $data['title'] = 'GeoJSON Overlay';
+
+        if (count($scannedFiles) === 0) {
+            $data['scanMessage'] = 'Scan selesai. Tidak ada file GeoJSON di folder public/geojson.';
+        }
+
+        return view('admin/geojson/index', $data);
+    }
+
+    public function toggle($id)
+    {
+        $redirect = $this->checkAccess();
+        if ($redirect) {
+            return $redirect;
+        }
+
+        $model = new GeojsonConfigModel();
+        $item = $model->find($id);
+        if (!$item) {
+            return redirect()->to('/admin/geojson')->with('error', 'Data tidak ditemukan!');
+        }
+
+        $isActive = $item['is_active'] ? 0 : 1;
+        $model->update($id, ['is_active' => $isActive]);
+
+        $logModel = new ActivityLogModel();
+        $logModel->insert([
+            'user_id' => session()->get('user_id'),
+            'admin_name' => session()->get('nama_lengkap'),
+            'action' => 'update',
+            'entity_type' => 'geojson',
+            'entity_id' => $id,
+            'description' => ($isActive ? 'Mengaktifkan' : 'Menonaktifkan') . ' GeoJSON ' . ($item['nama'] ?? $item['file_path']),
+            'ip_address' => $this->request->getIPAddress(),
+            'user_agent' => $this->request->getUserAgent()->getAgentString(),
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to('/admin/geojson')->with('success', 'GeoJSON berhasil ' . ($isActive ? 'diaktifkan' : 'dinonaktifkan') . '!');
     }
     
     public function hapus($id)

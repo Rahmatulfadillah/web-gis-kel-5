@@ -278,6 +278,23 @@
                         </div>
                     </div>
                     
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-info py-3">
+                                <h6 class="mb-2">Area GeoJSON Aktif</h6>
+                                <?php if (!empty($geojson_layers)): ?>
+                                    <ul class="mb-0 ps-3">
+                                        <?php foreach ($geojson_layers as $layer): ?>
+                                            <li><?= esc($layer['nama']) ?> <small class="text-muted">(<?= esc($layer['file_path']) ?>)</small></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php else: ?>
+                                    <p class="mb-0 text-muted">Tidak ada layer GeoJSON aktif. Aktifkan GeoJSON dari menu GeoJSON Overlay.</p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <hr class="my-4">
                     
                     <!-- Tombol Aksi -->
@@ -307,7 +324,7 @@
     
     var map = L.map('map', {
         center: [initialLat, initialLng],
-        zoom: 15,
+        zoom: 11,
         zoomControl: true
     });
     
@@ -323,7 +340,12 @@
     });
     
     standardLayer.addTo(map);
-    
+
+    var activeGeojsonConfigs = <?= json_encode($geojson_layers ?? []) ?>;
+    var activeGeojsonObjects = [];
+    var activeGeojsonLoaded = activeGeojsonConfigs.length === 0;
+    var lastValidLatLng = L.latLng(initialLat, initialLng);
+
     var marker = L.marker([initialLat, initialLng], {
         draggable: true
     }).addTo(map);
@@ -347,16 +369,152 @@
         document.getElementById('latitude').value = lat.toFixed(8);
         document.getElementById('longitude').value = lng.toFixed(8);
     }
-    
+
+    function pointInsideRing(point, ring) {
+        var x = point.lng;
+        var y = point.lat;
+        var inside = false;
+        for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            var xi = ring[i][0];
+            var yi = ring[i][1];
+            var xj = ring[j][0];
+            var yj = ring[j][1];
+            var intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    function pointInsidePolygon(point, polygon) {
+        if (!Array.isArray(polygon) || polygon.length === 0) {
+            return false;
+        }
+        if (!pointInsideRing(point, polygon[0])) {
+            return false;
+        }
+        for (var i = 1; i < polygon.length; i++) {
+            if (pointInsideRing(point, polygon[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function pointInsideGeojson(point, geojson) {
+        if (!geojson || !geojson.type) {
+            return false;
+        }
+
+        if (geojson.type === 'FeatureCollection') {
+            return (geojson.features || []).some(function(feature) {
+                return pointInsideGeojson(point, feature);
+            });
+        }
+
+        if (geojson.type === 'Feature') {
+            return pointInsideGeojson(point, geojson.geometry);
+        }
+
+        if (geojson.type === 'Polygon') {
+            return pointInsidePolygon(point, geojson.coordinates);
+        }
+
+        if (geojson.type === 'MultiPolygon') {
+            return (geojson.coordinates || []).some(function(polygon) {
+                return pointInsidePolygon(point, polygon);
+            });
+        }
+
+        return false;
+    }
+
+    function isLocationInsideActiveGeojson(lat, lng) {
+        if (!activeGeojsonObjects || activeGeojsonObjects.length === 0) {
+            return true;
+        }
+        var point = {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng)
+        };
+        return activeGeojsonObjects.some(function(geojson) {
+            return pointInsideGeojson(point, geojson);
+        });
+    }
+
+    function setMarkerPosition(lat, lng, showMessage) {
+        if (isLocationInsideActiveGeojson(lat, lng)) {
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 15);
+            updateCoordinates(lat, lng);
+            lastValidLatLng = L.latLng(lat, lng);
+            return true;
+        }
+
+        if (showMessage !== false) {
+            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
+        }
+
+        marker.setLatLng(lastValidLatLng);
+        updateCoordinates(lastValidLatLng.lat, lastValidLatLng.lng);
+        return false;
+    }
+
+    function loadActiveGeojson() {
+        if (!activeGeojsonConfigs || activeGeojsonConfigs.length === 0) {
+            activeGeojsonLoaded = true;
+            return;
+        }
+
+        var baseUrl = '<?= rtrim(base_url(), '/') ?>';
+        var remaining = activeGeojsonConfigs.length;
+
+        activeGeojsonConfigs.forEach(function(layerConfig) {
+            if (!layerConfig.file_path) {
+                remaining--;
+                if (remaining <= 0) {
+                    activeGeojsonLoaded = true;
+                }
+                return;
+            }
+            var url = baseUrl.replace(/\/+$/, '') + '/' + layerConfig.file_path.replace(/^\/+/, '');
+            fetch(url)
+                .then(function(res) {
+                    if (!res.ok) {
+                        throw new Error('HTTP error ' + res.status);
+                    }
+                    return res.json();
+                })
+                .then(function(data) {
+                    activeGeojsonObjects.push(data);
+                    L.geoJSON(data, {
+                        style: {
+                            color: layerConfig.stroke_color || '#1e293b',
+                            weight: Number(layerConfig.stroke_width) || 2,
+                            fillColor: layerConfig.warna || '#2563eb',
+                            fillOpacity: Number(layerConfig.fill_opacity) || 0.4,
+                        }
+                    }).addTo(map);
+                })
+                .catch(function(err) {
+                    console.warn('Gagal memuat GeoJSON aktif:', layerConfig.file_path, err);
+                })
+                .finally(function() {
+                    remaining--;
+                    if (remaining <= 0) {
+                        activeGeojsonLoaded = true;
+                    }
+                });
+        });
+    }
+
     function updateMarkerFromInput() {
         var lat = parseFloat(document.getElementById('latitude').value);
         var lng = parseFloat(document.getElementById('longitude').value);
         
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            marker.setLatLng([lat, lng]);
-            map.setView([lat, lng], 15);
-            updateCoordinates(lat, lng);
-            showNotification('Koordinat berhasil diperbarui!', 'success');
+            if (setMarkerPosition(lat, lng)) {
+                showNotification('Koordinat berhasil diperbarui!', 'success');
+            }
         } else {
             alert('Masukkan latitude (-90 s/d 90) dan longitude (-180 s/d 180) yang valid!');
         }
@@ -377,27 +535,31 @@
         setTimeout(function() { notif.remove(); }, 3000);
     }
     
+    loadActiveGeojson();
     updateCoordinates(initialLat, initialLng);
     
     map.on('click', function(e) {
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
-        marker.setLatLng([lat, lng]);
-        updateCoordinates(lat, lng);
-        showNotification('Lokasi dipilih: ' + lat.toFixed(6) + ', ' + lng.toFixed(6), 'success');
+        if (setMarkerPosition(lat, lng)) {
+            showNotification('Lokasi dipilih: ' + lat.toFixed(6) + ', ' + lng.toFixed(6), 'success');
+        }
     });
     
     marker.on('dragend', function(e) {
         var position = marker.getLatLng();
-        updateCoordinates(position.lat, position.lng);
-        showNotification('Marker digeser ke: ' + position.lat.toFixed(6) + ', ' + position.lng.toFixed(6), 'info');
+        if (setMarkerPosition(position.lat, position.lng, false)) {
+            showNotification('Marker digeser ke: ' + position.lat.toFixed(6) + ', ' + position.lng.toFixed(6), 'info');
+        } else {
+            showNotification('Marker dikembalikan karena berada di luar area GeoJSON aktif.', 'danger');
+        }
     });
     
     document.getElementById('latitude').addEventListener('input', function() {
         var lat = parseFloat(this.value);
         var lng = parseFloat(document.getElementById('longitude').value);
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            marker.setLatLng([lat, lng]);
+            setMarkerPosition(lat, lng, false);
         }
     });
     
@@ -405,7 +567,7 @@
         var lat = parseFloat(document.getElementById('latitude').value);
         var lng = parseFloat(this.value);
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            marker.setLatLng([lat, lng]);
+            setMarkerPosition(lat, lng, false);
         }
     });
     
@@ -416,6 +578,7 @@
     document.getElementById('resetLocationBtn').addEventListener('click', function() {
         marker.setLatLng([defaultLat, defaultLng]);
         updateCoordinates(defaultLat, defaultLng);
+        lastValidLatLng = L.latLng(defaultLat, defaultLng);
         map.setView([defaultLat, defaultLng], 13);
         showNotification('Kembali ke posisi default', 'info');
     });
@@ -440,6 +603,18 @@
         if (!lat || !lng || lat === '' || lng === '') {
             e.preventDefault();
             alert('Silakan isi Latitude dan Longitude terlebih dahulu!');
+            return;
+        }
+
+        if (!activeGeojsonLoaded && activeGeojsonConfigs.length > 0) {
+            e.preventDefault();
+            alert('Harap tunggu hingga layer GeoJSON aktif selesai dimuat.');
+            return;
+        }
+
+        if (!isLocationInsideActiveGeojson(lat, lng)) {
+            e.preventDefault();
+            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
     });
 </script>

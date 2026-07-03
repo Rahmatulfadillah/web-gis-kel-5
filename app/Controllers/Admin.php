@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\ActivityLogModel;
+use App\Models\GeojsonConfigModel;
 use App\Models\SekolahModel;
 use App\Models\UserModel;
 
@@ -49,6 +50,117 @@ class Admin extends BaseController
             return redirect()->to('/admin/dashboard')->with('error', 'Akses ditolak! Hanya Super Admin yang bisa mengakses halaman ini.');
         }
         return null;
+    }
+
+    private function isPointInPolygon(array $point, array $ring): bool
+    {
+        $x = (float) $point[1];
+        $y = (float) $point[0];
+        $inside = false;
+        $j = count($ring) - 1;
+
+        for ($i = 0; $i < count($ring); $i++) {
+            $xi = (float) $ring[$i][0];
+            $yi = (float) $ring[$i][1];
+            $xj = (float) $ring[$j][0];
+            $yj = (float) $ring[$j][1];
+
+            if ((($yi > $y) !== ($yj > $y)) && ($x < ($xj - $xi) * ($y - $yi) / ($yj - $yi) + $xi)) {
+                $inside = !$inside;
+            }
+
+            $j = $i;
+        }
+
+        return $inside;
+    }
+
+    private function isPointInGeojson(array $point, array $geojson): bool
+    {
+        if (empty($geojson) || empty($point)) {
+            return false;
+        }
+
+        $type = $geojson['type'] ?? null;
+
+        if ($type === 'FeatureCollection') {
+            foreach ($geojson['features'] ?? [] as $feature) {
+                if ($this->isPointInGeojson($point, $feature)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if ($type === 'Feature') {
+            return $this->isPointInGeojson($point, $geojson['geometry'] ?? []);
+        }
+
+        if ($type === 'Polygon') {
+            $rings = $geojson['coordinates'] ?? [];
+            if (empty($rings) || !is_array($rings)) {
+                return false;
+            }
+            if (!$this->isPointInPolygon($point, $rings[0] ?? [])) {
+                return false;
+            }
+            for ($i = 1; $i < count($rings); $i++) {
+                if ($this->isPointInPolygon($point, $rings[$i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        if ($type === 'MultiPolygon') {
+            foreach ($geojson['coordinates'] ?? [] as $polygon) {
+                if ($this->isPointInGeojson($point, ['type' => 'Polygon', 'coordinates' => $polygon])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return false;
+    }
+
+    private function isPointInsideActiveGeojson($latitude, $longitude): bool
+    {
+        if ($latitude === null || $longitude === null) {
+            return false;
+        }
+
+        $geojsonModel = new GeojsonConfigModel();
+        $layers = $geojsonModel->where('is_active', 1)->findAll();
+
+        if (empty($layers)) {
+            return true;
+        }
+
+        $point = [(float) $latitude, (float) $longitude];
+
+        foreach ($layers as $layer) {
+            $path = ROOTPATH . 'public/' . ltrim($layer['file_path'], '/\\');
+            if (!is_file($path)) {
+                continue;
+            }
+
+            $content = @file_get_contents($path);
+            if (!$content) {
+                continue;
+            }
+
+            $geojson = json_decode($content, true);
+            if (!is_array($geojson)) {
+                continue;
+            }
+
+            if ($this->isPointInGeojson($point, $geojson)) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     public function dashboard()
@@ -115,6 +227,8 @@ class Admin extends BaseController
         $redirect = $this->checkSuperAdmin();
         if ($redirect) return $redirect;
         
+        $geojsonModel = new GeojsonConfigModel();
+        $data['geojson_layers'] = $geojsonModel->where('is_active', 1)->orderBy('nama')->findAll();
         $data['title'] = 'Tambah Sekolah';
         return view('admin/sekolah/tambah', $data);
     }
@@ -139,6 +253,12 @@ class Admin extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('error', 'Semua kolom wajib bertanda bintang/krusial harus diisi!');
+        }
+
+        $latitude = $this->request->getPost('latitude');
+        $longitude = $this->request->getPost('longitude');
+        if (!$this->isPointInsideActiveGeojson($latitude, $longitude)) {
+            return redirect()->back()->withInput()->with('error', 'Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
 
         $sekolahModel = new SekolahModel();
@@ -236,6 +356,8 @@ class Admin extends BaseController
         
         // Ambil data user admin sekolah
         $data['admin_user'] = $userModel->where('school_id', $id)->where('role', 'admin_sekolah')->first();
+        $geojsonModel = new GeojsonConfigModel();
+        $data['geojson_layers'] = $geojsonModel->where('is_active', 1)->orderBy('nama')->findAll();
         $data['title'] = 'Edit Sekolah';
         $data['is_super_admin'] = session()->get('role') === 'admin_super';
         
@@ -271,6 +393,12 @@ class Admin extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('error', 'Semua kolom wajib bertanda bintang/krusial harus diisi!');
+        }
+        
+        $latitude = $this->request->getPost('latitude');
+        $longitude = $this->request->getPost('longitude');
+        if (!$this->isPointInsideActiveGeojson($latitude, $longitude)) {
+            return redirect()->back()->withInput()->with('error', 'Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
         
         $foto = $this->request->getFile('foto');
