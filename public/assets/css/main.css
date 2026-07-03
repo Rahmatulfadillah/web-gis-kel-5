@@ -1,0 +1,385 @@
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #60a5fa;
+    --success: #10b981;
+    --danger: #ef4444;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --bg: #f0f8ff;
+    --white: #ffffff;
+    --shadow: 0 14px 50px rgba(15, 23, 42, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+}
+
+.site-main {
+    padding-top: 92px;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+.site-header {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    z-index: 1030;
+    transition: all 0.3s ease;
+}
+
+.site-header .navbar {
+    padding: 0.65rem 0;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--primary) !important;
+    font-size: 1.2rem;
+}
+
+.navbar .nav-link {
+    color: var(--text-dark) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-link:hover {
+    color: var(--primary) !important;
+}
+
+.navbar .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+}
+
+.hero-section,
+.page-header {
+    padding-top: 100px;
+}
+
+.hero-card,
+.info-card,
+.stat-card,
+.feature-card,
+.map-card,
+.contact-card,
+.form-card,
+.info-panel,
+.sekolah-list-card {
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+}
+
+.hero-title,
+.section-title,
+.page-header h1,
+.footer-title,
+.info-title {
+    font-weight: 800;
+}
+
+.hero-title {
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    line-height: 1.05;
+}
+
+.hero-section p,
+.section-description,
+.card-text,
+.footer-text,
+.contact-card p,
+.info-panel p {
+    color: var(--text-muted);
+}
+
+.btn-primary-custom,
+.btn-outline-custom,
+.btn-fullscreen,
+.btn-send,
+.btn-filter,
+.navbar .btn-primary,
+.social-link {
+    transition: all 0.25s ease;
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+}
+
+.btn-outline-custom:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+}
+
+.btn-fullscreen,
+.btn-send,
+.btn-primary-custom,
+.btn-filter,
+.navbar .btn-primary {
+    border-radius: 999px;
+}
+
+.section-title {
+    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+}
+
+.stat-card,
+.feature-card,
+.contact-card,
+.info-panel,
+.sekolah-list-card {
+    padding: 2rem;
+}
+
+.stat-card:hover,
+.feature-card:hover,
+.map-card:hover,
+.contact-card:hover,
+.info-panel:hover,
+.sekolah-list-card:hover {
+    transform: translateY(-6px);
+}
+
+.stat-number {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.feature-icon,
+.contact-icon,
+.stat-icon {
+    width: 90px;
+    height: 90px;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    margin: 0 auto 1.5rem;
+    color: white;
+}
+
+.feature-icon {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+}
+
+.contact-icon {
+    background: linear-gradient(135deg, var(--primary), var(--success));
+}
+
+.stat-icon {
+    background: rgba(37, 99, 235, 0.12);
+}
+
+.map-card,
+.info-card,
+.feature-card,
+.contact-card,
+.form-card,
+.sekolah-list-card {
+    overflow: hidden;
+}
+
+#homeGeojsonMap,
+#map {
+    width: 100%;
+    min-height: 420px;
+    border-radius: 18px;
+    border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+footer.site-footer {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+.footer-brand,
+.footer-title {
+    color: white;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+}
+
+.footer-divider {
+    border-color: rgba(255,255,255,0.08);
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 18px !important;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.16) !important;
+    border: 1px solid rgba(37,99,235,0.10) !important;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.school-popup {
+    min-width: 320px;
+    max-width: 390px;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.school-popup__image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+}
+
+.school-popup__header {
+    padding: 14px 16px 12px;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), #3b82f6);
+}
+
+.school-popup__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.school-popup__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.school-popup__badge {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.24);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.school-popup__body {
+    padding: 14px 16px 16px;
+}
+
+.school-popup__label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.school-popup__text {
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.65;
+}
+
+.school-popup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.school-popup__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--primary), #3b82f6);
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.school-popup__btn.secondary {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+}
+
+.school-popup__btn:hover {
+    opacity: 0.94;
+}
+
+.btn-filter {
+    border-radius: 999px;
+    border: 1px solid rgba(15,23,42,0.08);
+    padding: 10px 22px;
+    background: transparent;
+    color: var(--text-dark);
+}
+
+.btn-filter.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 10px 30px rgba(37,99,235,0.18);
+    border-color: transparent;
+}
+
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 2.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar .nav-link {
+        margin: 0.25rem 0;
+    }
+    .hero-section,
+    .page-header {
+        padding-top: 80px;
+    }
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-card,
+    .feature-card,
+    .stat-card,
+    .map-card {
+        padding: 1.5rem;
+    }
+}

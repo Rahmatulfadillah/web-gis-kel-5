@@ -757,11 +757,31 @@ function focusMarkerDirect(lat, lng) {
 function loadGeojsonOverlay() {
     if (!geojsonLayers || geojsonLayers.length === 0) return;
     var baseUrl = '<?= rtrim(base_url(), '/') ?>';
+    var overlayBounds = null;
+
+    function resolveGeojsonUrl(filePath) {
+        if (!filePath) return '';
+        var normalized = filePath.replace(/\\/g, '/').replace(/^\/+/,'');
+        normalized = normalized.replace(/^public\//i, '');
+        return /^https?:\/\//i.test(normalized) ? normalized : baseUrl + '/' + normalized;
+    }
+
     geojsonLayers.forEach(function(layerConfig) {
-        fetch(baseUrl + '/' + layerConfig.file_path)
-            .then(function(res) { return res.json(); })
+        var url = resolveGeojsonUrl(layerConfig.file_path);
+        if (!url) {
+            return console.warn('GeoJSON file_path kosong:', layerConfig);
+        }
+        console.log('Memuat GeoJSON:', url);
+
+        fetch(url)
+            .then(function(res) {
+                if (!res.ok) {
+                    throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                }
+                return res.json();
+            })
             .then(function(data) {
-                L.geoJSON(data, {
+                var layer = L.geoJSON(data, {
                     style: {
                         color: layerConfig.stroke_color || '#1e293b',
                         weight: Number(layerConfig.stroke_width) || 2,
@@ -769,8 +789,21 @@ function loadGeojsonOverlay() {
                         fillOpacity: Number(layerConfig.fill_opacity) || 0.4,
                     }
                 }).addTo(map);
+
+                if (layer.getBounds && layer.getBounds().isValid()) {
+                    overlayBounds = overlayBounds ? overlayBounds.extend(layer.getBounds()) : layer.getBounds();
+                    if (markers.length > 0) {
+                        var markerGroup = L.featureGroup(markers);
+                        if (markerGroup.getBounds && markerGroup.getBounds().isValid()) {
+                            var combined = markerGroup.getBounds().extend(overlayBounds);
+                            map.fitBounds(combined.pad(0.1));
+                            return;
+                        }
+                    }
+                    map.fitBounds(overlayBounds.pad(0.1));
+                }
             })
-            .catch(function() { console.warn('Gagal memuat GeoJSON:', layerConfig.file_path); });
+            .catch(function(error) { console.warn('Gagal memuat GeoJSON:', layerConfig.file_path, error.message); });
     });
 }
 
