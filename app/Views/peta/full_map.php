@@ -180,9 +180,9 @@
                 .then(function (geojsonData) {
                     var geojsonLayer = L.geoJSON(geojsonData, {
                         style: {
-                            color: layerConfig.stroke_color,
+                            color: layerConfig.stroke_color || '#1e293b',
                             weight: Number(layerConfig.stroke_width) || 2,
-                            fillColor: layerConfig.warna,
+                            fillColor: layerConfig.warna || '#2563eb',
                             fillOpacity: Number(layerConfig.fill_opacity) || 0.4,
                         }
                     }).addTo(map);

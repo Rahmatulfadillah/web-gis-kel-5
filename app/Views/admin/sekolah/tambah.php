@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: #f0f8ff; }
         
-        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: 100vh; color: white; position: sticky; top: 0; }
+        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: 100vh; color: white; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
         .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; border-radius: 10px; transition: all 0.3s; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2); color: white; }
         
@@ -268,6 +268,9 @@
                                         </div>
                                     </div>
                                     <div class="mt-2">
+                                        <div id="location-warning" class="text-danger mb-2 d-none" style="font-weight: 500; font-size: 13px;">
+                                            <i class="fas fa-exclamation-triangle me-1"></i> Lokasi sekolah harus berada di dalam area GeoJSON aktif!
+                                        </div>
                                         <small class="text-muted">
                                             <i class="fas fa-info-circle me-1"></i>
                                             Klik pada peta, geser marker, atau isi manual koordinat di atas
@@ -441,17 +444,29 @@
         });
     }
 
+    function showLocationWarning(show) {
+        var warningEl = document.getElementById('location-warning');
+        if (warningEl) {
+            if (show) {
+                warningEl.classList.remove('d-none');
+            } else {
+                warningEl.classList.add('d-none');
+            }
+        }
+    }
+
     function setMarkerPosition(lat, lng, showMessage) {
         if (isLocationInsideActiveGeojson(lat, lng)) {
             marker.setLatLng([lat, lng]);
             map.setView([lat, lng], 15);
             updateCoordinates(lat, lng);
             lastValidLatLng = L.latLng(lat, lng);
+            showLocationWarning(false);
             return true;
         }
 
         if (showMessage !== false) {
-            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
+            showLocationWarning(true);
         }
 
         marker.setLatLng(lastValidLatLng);
@@ -614,7 +629,11 @@
 
         if (!isLocationInsideActiveGeojson(lat, lng)) {
             e.preventDefault();
-            alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
+            showLocationWarning(true);
+            var warningEl = document.getElementById('location-warning');
+            if (warningEl) {
+                warningEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
     });
 </script>
