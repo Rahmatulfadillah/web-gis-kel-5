@@ -166,22 +166,10 @@
                         <?= esc(session()->get('nama_lengkap')) ?> <!-- DIPERBAIKI: dengan esc() -->
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="<?= base_url('/admin/dashboard') ?>">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="<?= base_url('/admin/sekolah') ?>">
-                                <i class="fas fa-school me-2"></i>Data Sekolah
-                            </a>
-                        </li>
+                        
+                       
                         <?php if (!empty($is_super_admin)) : ?>
-                        <li>
-                            <a class="dropdown-item" href="<?= base_url('/admin/geojson') ?>">
-                                <i class="fas fa-map me-2"></i>GeoJSON Overlay
-                            </a>
-                        </li>
+                        
                         <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -224,11 +212,6 @@
                     <li class="nav-item"><a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link"><i class="fas fa-history me-2"></i>Log Aktivitas</a></li>
                     <?php endif; ?>
                     
-                    <li class="nav-item mt-4">
-                        <a href="<?= base_url('/auth/logout') ?>" class="nav-link text-danger">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>

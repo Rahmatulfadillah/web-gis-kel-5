@@ -211,12 +211,7 @@
                         <i class="fas fa-user-circle me-1"></i> <?= session()->get('nama_lengkap') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= base_url('/admin/dashboard') ?>"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= base_url('/admin/sekolah') ?>"><i class="fas fa-school me-2"></i>Data Sekolah</a></li>
-                        <li><a class="dropdown-item" href="<?= base_url('/admin/geojson') ?>"><i class="fas fa-map me-2"></i>GeoJSON Overlay</a></li>
-                        
-                        
-                        <li><a class="dropdown-item" href="<?= base_url('/admin/profil') ?>"><i class="fas fa-user-circle me-2"></i>Profil Saya</a></li>
+
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="<?= base_url('/auth/logout') ?>"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
@@ -260,11 +255,7 @@
                         <a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link">
                             <i class="fas fa-history me-2"></i>Log Aktivitas
                         </a>
-                    <li class="nav-item mt-4">
-                        <a href="<?= base_url('/auth/logout') ?>" class="nav-link text-danger">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout 
-                        </a>
-                    </li>
+
                 </ul>
             </div>
         </div>

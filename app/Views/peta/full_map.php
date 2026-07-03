@@ -171,47 +171,24 @@
     function loadGeojsonOverlay() {
         if (geojsonLayers.length === 0) return;
         
-        var overlayBounds = null;
+        var boundsList = [];
         var baseUrl = '<?= rtrim(base_url(), '/') ?>';
         
-        function resolveGeojsonUrl(filePath) {
-            if (!filePath) return '';
-            var normalized = filePath.replace(/\\/g, '/').replace(/^\/+/,'');
-            normalized = normalized.replace(/^public\//i, '');
-            return /^https?:\/\//i.test(normalized) ? normalized : baseUrl + '/' + normalized;
-        }
-        
         geojsonLayers.forEach(function (layerConfig) {
-            var url = resolveGeojsonUrl(layerConfig.file_path);
-            if (!url) {
-                return console.warn('GeoJSON file_path kosong:', layerConfig);
-            }
-            console.log('Memuat GeoJSON:', url);
-
-            fetch(url)
-                .then(function (response) {
-                    if (!response.ok) {
-                        throw new Error('HTTP ' + response.status + ' ' + response.statusText);
-                    }
-                    return response.json();
-                })
+            fetch(baseUrl + '/' + layerConfig.file_path)
+                .then(function (response) { return response.json(); })
                 .then(function (geojsonData) {
                     var geojsonLayer = L.geoJSON(geojsonData, {
                         style: {
-                            color: layerConfig.stroke_color || '#2563eb',
+                            color: layerConfig.stroke_color || '#1e293b',
                             weight: Number(layerConfig.stroke_width) || 2,
                             fillColor: layerConfig.warna || '#2563eb',
                             fillOpacity: Number(layerConfig.fill_opacity) || 0.4,
                         }
                     }).addTo(map);
-
-                    if (geojsonLayer.getBounds && geojsonLayer.getBounds().isValid()) {
-                        overlayBounds = overlayBounds ? overlayBounds.extend(geojsonLayer.getBounds()) : geojsonLayer.getBounds();
-                        map.fitBounds(overlayBounds.pad(0.1));
-                    }
                 })
-                .catch(function (error) {
-                    console.warn('Gagal memuat layer GeoJSON:', layerConfig.file_path, error.message);
+                .catch(function () {
+                    console.warn('Gagal memuat layer GeoJSON:', layerConfig.file_path);
                 });
         });
     }
