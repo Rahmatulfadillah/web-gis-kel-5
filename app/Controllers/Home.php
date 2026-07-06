@@ -18,7 +18,7 @@ class Home extends BaseController
             'total_sd' => $sekolahModel->where('jenjang', 'SD')->countAllResults(),
             'total_smp' => $sekolahModel->where('jenjang', 'SMP')->countAllResults(),
             'sekolah_terbaru' => $sekolahModel->orderBy('created_at', 'DESC')->findAll(5),
-            'sekolah' => $sekolahModel->select('id, npsn, nama_sekolah, jenjang, status, akreditasi, alamat, kontak_admin, latitude, longitude')->findAll(),
+            'sekolah' => $sekolahModel->select('id, npsn, nama_sekolah, jenjang, status, akreditasi, alamat, kontak_admin, latitude, longitude, foto, visi, misi')->findAll(),
             'geojson_layers' => $geojsonModel->where('is_active', 1)->findAll(),
         ];
         

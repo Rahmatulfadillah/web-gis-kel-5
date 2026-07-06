@@ -621,4 +621,198 @@ class Admin extends BaseController
 
         return redirect()->to('/admin/users')->with('error', 'Gagal menghapus akun admin.');
     }
+    
+    // ========== PROFIL ==========
+    
+    public function profil()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $userModel = new UserModel();
+        $user = $userModel->find(session()->get('user_id'));
+        
+        if (!$user) {
+            return redirect()->to('/auth/login')->with('error', 'User tidak ditemukan!');
+        }
+        
+        $data['user'] = $user;
+        $data['title'] = 'Profil Saya';
+        
+        return view('admin/profil', $data);
+    }
+    
+    public function editProfil()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $userModel = new UserModel();
+        $user = $userModel->find(session()->get('user_id'));
+        
+        if (!$user) {
+            return redirect()->to('/auth/login')->with('error', 'User tidak ditemukan!');
+        }
+        
+        $data['user'] = $user;
+        $data['title'] = 'Edit Profil';
+        
+        return view('admin/edit_profil', $data);
+    }
+    
+    public function updateProfil()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $userModel = new UserModel();
+        $userId = session()->get('user_id');
+        
+        $rules = [
+            'nama_lengkap' => 'required|max_length[200]',
+            'email' => 'required|valid_email|max_length[191]',
+        ];
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Data tidak valid!');
+        }
+        
+        $data = [
+            'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+            'email' => $this->request->getPost('email'),
+        ];
+        
+        if ($userModel->update($userId, $data)) {
+            // Update session data
+            session()->set('nama_lengkap', $this->request->getPost('nama_lengkap'));
+            
+            $this->logActivity(
+                'update',
+                'user',
+                $userId,
+                'Mengubah profil admin'
+            );
+            
+            return redirect()->to('/admin/profil')->with('success', 'Profil berhasil diperbarui!');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui profil!');
+        }
+    }
+    
+    public function gantiPassword()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $data['title'] = 'Ganti Password';
+        
+        return view('admin/ganti_password', $data);
+    }
+    
+    public function updatePassword()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $userModel = new UserModel();
+        $userId = session()->get('user_id');
+        $user = $userModel->find($userId);
+        
+        if (!$user) {
+            return redirect()->to('/auth/login')->with('error', 'User tidak ditemukan!');
+        }
+        
+        $oldPassword = $this->request->getPost('old_password');
+        $newPassword = $this->request->getPost('new_password');
+        $confirmPassword = $this->request->getPost('confirm_password');
+        
+        // Validasi password lama
+        if ($user['password'] !== $oldPassword) {
+            return redirect()->back()->with('error', 'Password lama tidak sesuai!');
+        }
+        
+        // Validasi password baru
+        if (strlen($newPassword) < 6) {
+            return redirect()->back()->with('error', 'Password baru minimal 6 karakter!');
+        }
+        
+        // Validasi konfirmasi password
+        if ($newPassword !== $confirmPassword) {
+            return redirect()->back()->with('error', 'Konfirmasi password tidak sesuai!');
+        }
+        
+        // Update password
+        if ($userModel->update($userId, ['password' => $newPassword])) {
+            $this->logActivity(
+                'update',
+                'user',
+                $userId,
+                'Mengubah password'
+            );
+            
+            return redirect()->to('/admin/profil')->with('success', 'Password berhasil diubah!');
+        } else {
+            return redirect()->back()->with('error', 'Gagal mengubah password!');
+        }
+    }
+    
+    public function uploadFoto()
+    {
+        $redirect = $this->checkAdmin();
+        if ($redirect) return $redirect;
+        
+        $userModel = new UserModel();
+        $userId = session()->get('user_id');
+        $user = $userModel->find($userId);
+        
+        if (!$user) {
+            return redirect()->to('/auth/login')->with('error', 'User tidak ditemukan!');
+        }
+        
+        $foto = $this->request->getFile('foto');
+        
+        if (!$foto || !$foto->isValid() || $foto->hasMoved()) {
+            return redirect()->back()->with('error', 'Gagal upload foto!');
+        }
+        
+        // Validasi tipe file
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($foto->getMimeType(), $allowedMimes)) {
+            return redirect()->back()->with('error', 'Tipe file tidak didukung! Gunakan JPEG, PNG, atau GIF.');
+        }
+        
+        // Validasi ukuran file (max 5MB)
+        if ($foto->getSize() > 5 * 1024 * 1024) {
+            return redirect()->back()->with('error', 'Ukuran file terlalu besar! Maksimal 5MB.');
+        }
+        
+        // Buat folder uploads jika belum ada
+        $uploadPath = ROOTPATH . 'public/uploads/foto_profil';
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+        
+        // Hapus foto lama jika ada
+        if (!empty($user['foto']) && file_exists($uploadPath . '/' . $user['foto'])) {
+            unlink($uploadPath . '/' . $user['foto']);
+        }
+        
+        // Upload foto baru
+        $fotoName = $foto->getRandomName();
+        $foto->move($uploadPath, $fotoName);
+        
+        // Update database
+        if ($userModel->update($userId, ['foto' => $fotoName])) {
+            $this->logActivity(
+                'update',
+                'user',
+                $userId,
+                'Mengupload foto profil'
+            );
+            
+            return redirect()->to('/admin/profil')->with('success', 'Foto profil berhasil diupload!');
+        } else {
+            return redirect()->back()->with('error', 'Gagal menyimpan foto profil!');
+        }
+    }
 }

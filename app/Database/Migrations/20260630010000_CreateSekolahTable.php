@@ -86,7 +86,7 @@ class CreateSekolahTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addKey('npsn', false, true);
-        $this->forge->createTable('sekolah');
+        $this->forge->createTable('sekolah', true);
     }
 
     public function down()

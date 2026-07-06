@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?> - Admin</title>
+    <title><?= esc($title ?? 'GeoJSON Overlay') ?> - Admin</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -126,7 +126,9 @@
         
         .btn-sm {
             border-radius: 8px;
-            padding: 5px 15px;
+            padding: 5px 12px !important;
+            font-size: 0.8rem !important;
+            font-weight: 500;
         }
         
         /* Badge */
@@ -165,6 +167,15 @@
             color: #2563eb;
         }
         
+        /* Button Action */
+        .btn-action-toggle {
+            min-width: 100px;
+        }
+        
+        .btn-action-icon {
+            min-width: 40px;
+        }
+        
         @media (max-width: 768px) {
             .sidebar {
                 position: relative;
@@ -175,43 +186,20 @@
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- Navbar untuk Admin (hanya profile) -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="<?= base_url('/') ?>">
-            <i class="fas fa-school me-2"></i><strong>EduMap Lintau Buo</strong>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div style="margin-left: auto;">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/') ?>">
-                        <i class="fas fa-home me-1"></i>Beranda
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/peta') ?>">
-                        <i class="fas fa-map-marked-alt me-1"></i>Peta Sekolah
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/about') ?>">
-                        <i class="fas fa-info-circle me-1"></i>Tentang
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('/kontak') ?>">
-                        <i class="fas fa-envelope me-1"></i>Kontak
-                    </a>
-                </li>
-                <li class="nav-item dropdown ms-2">
+                <!-- Dropdown Admin -->
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-1"></i> <?= session()->get('nama_lengkap') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-
+                       <li><a class="dropdown-item" href="<?= base_url('/admin/profil') ?>"><i class="fas fa-user-circle me-2"></i>Profil Saya</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('/admin/edit_profil') ?>"><i class="fas fa-edit me-2"></i>Edit Profil</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('/admin/ganti_password') ?>"><i class="fas fa-key me-2"></i>Ganti Password</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="<?= base_url('/auth/logout') ?>"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
@@ -255,7 +243,7 @@
                         <a href="<?= base_url('/admin/activity-logs') ?>" class="nav-link">
                             <i class="fas fa-history me-2"></i>Log Aktivitas
                         </a>
-
+                    </li>
                 </ul>
             </div>
         </div>
@@ -265,13 +253,12 @@
             <!-- Page Header -->
             <div class="navbar-top">
                 <h4>
-                    <i class="fas fa-map me-2 text-primary"></i><?= $title ?>
+                    <i class="fas fa-map me-2 text-primary"></i><?= esc($title ?? 'GeoJSON Overlay') ?>
                 </h4>
                 <div>
                     <a href="<?= base_url('/admin/dashboard') ?>" class="btn btn-back-custom me-2">
                         <i class="fas fa-arrow-left me-2"></i>Kembali
                     </a>
-                  
                 </div>
             </div>
 
@@ -297,6 +284,67 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($scannedFiles)) : ?>
+                <div class="card card-shadow mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"><i class="fas fa-search me-2 text-primary"></i>Hasil Scan GeoJSON</h5>
+                            <a href="<?= base_url('/admin/geojson/scan') ?>" class="btn btn-primary-custom btn-sm">
+                                <i class="fas fa-refresh me-1"></i> Scan Ulang
+                            </a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nama File</th>
+                                        <th>Status</th>
+                                        <th>Data</th>
+                                        <th>Path</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($scannedFiles as $file) : ?>
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file-code me-2 text-primary"></i>
+                                                <?= esc($file['filename']) ?>
+                                            </td>
+                                            <td>
+                                                <?php if (($file['status'] ?? '') === 'exists') : ?>
+                                                    <span class="badge bg-success">Sudah ada</span>
+                                                <?php else : ?>
+                                                    <span class="badge bg-info text-dark">Baru</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    <?= (int)($file['feature_count'] ?? 0) ?> fitur
+                                                    <?php if (!empty($file['geometry_types'])) : ?>
+                                                        • <?= esc(implode(', ', $file['geometry_types'])) ?>
+                                                    <?php endif; ?>
+                                                </small>
+                                            </td>
+                                            <td><small class="text-muted"><?= esc($file['file_path']) ?></small></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Table -->
+            <div class="card card-shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="fas fa-layer-group me-2 text-primary"></i>Konfigurasi GeoJSON</h5>
+                        <a href="<?= base_url('/admin/geojson/scan') ?>" class="btn btn-primary-custom btn-sm">
+                            <i class="fas fa-search me-1"></i> Scan GeoJSON
+                        </a>
+                    </div>
+                    <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
@@ -344,15 +392,24 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-2 flex-wrap">
-                                                    <a href="<?= base_url('/admin/geojson/toggle/' . $item['id']) ?>" class="btn btn-sm <?= $item['is_active'] ? 'btn-secondary' : 'btn-success' ?>">
+                                                    <!-- Toggle Button -->
+                                                    <a href="<?= base_url('/admin/geojson/toggle/' . $item['id']) ?>" 
+                                                       class="btn btn-sm <?= $item['is_active'] ? 'btn-secondary' : 'btn-success' ?> btn-action-toggle">
                                                         <i class="fas <?= $item['is_active'] ? 'fa-eye-slash' : 'fa-eye' ?> me-1"></i>
                                                         <?= $item['is_active'] ? 'Nonaktifkan' : 'Aktifkan' ?>
                                                     </a>
-                                                    <a href="<?= base_url('/admin/geojson/edit/' . $item['id']) ?>" class="btn btn-sm btn-warning">
-                                                        <i class="fas fa-edit me-1"></i> Ubah
+                                                    
+                                                    <!-- Edit Button -->
+                                                    <a href="<?= base_url('/admin/geojson/edit/' . $item['id']) ?>" 
+                                                       class="btn btn-sm btn-warning btn-action-icon">
+                                                        <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="<?= base_url('/admin/geojson/hapus/' . $item['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data GeoJSON ini?')">
-                                                        <i class="fas fa-trash me-1"></i> Hapus
+                                                    
+                                                    <!-- Delete Button -->
+                                                    <a href="<?= base_url('/admin/geojson/hapus/' . $item['id']) ?>" 
+                                                       class="btn btn-sm btn-danger btn-action-icon" 
+                                                       onclick="return confirm('Yakin ingin menghapus data GeoJSON ini?')">
+                                                        <i class="fas fa-trash"></i>
                                                     </a>
                                                 </div>
                                             </td>

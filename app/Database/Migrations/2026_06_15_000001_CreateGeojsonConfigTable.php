@@ -57,7 +57,7 @@ class CreateGeojsonConfigTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->createTable('geojson_config');
+        $this->forge->createTable('geojson_config', true);
     }
 
     public function down()

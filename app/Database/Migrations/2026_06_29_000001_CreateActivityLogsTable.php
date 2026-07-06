@@ -63,7 +63,7 @@ class CreateActivityLogsTable extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addKey('user_id');
         $this->forge->addKey('created_at');
-        $this->forge->createTable('activity_logs');
+        $this->forge->createTable('activity_logs', true);
     }
 
     public function down()
