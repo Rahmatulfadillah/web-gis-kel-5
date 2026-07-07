@@ -24,7 +24,7 @@
         /* Sidebar */
         .sidebar { 
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
-            min-height: 175vh; 
+            min-height: 185vh; 
             color: white; 
             transition: transform 0.3s ease;
         }
