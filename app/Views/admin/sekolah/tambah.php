@@ -435,11 +435,14 @@
         });
     }
 
-    function setMarkerPosition(lat, lng, showMessage) {
+    function setMarkerPosition(lat, lng, showMessage, updateInputs) {
+        if (updateInputs === undefined) updateInputs = true;
         if (isLocationInsideActiveGeojson(lat, lng)) {
             marker.setLatLng([lat, lng]);
             map.setView([lat, lng], 15);
-            updateCoordinates(lat, lng);
+            if (updateInputs) {
+                updateCoordinates(lat, lng);
+            }
             lastValidLatLng = L.latLng(lat, lng);
             return true;
         }
@@ -448,8 +451,10 @@
             alert('Lokasi sekolah harus berada di dalam area GeoJSON aktif.');
         }
 
-        marker.setLatLng(lastValidLatLng);
-        updateCoordinates(lastValidLatLng.lat, lastValidLatLng.lng);
+        if (updateInputs) {
+            marker.setLatLng(lastValidLatLng);
+            updateCoordinates(lastValidLatLng.lat, lastValidLatLng.lng);
+        }
         return false;
     }
 
@@ -553,7 +558,7 @@
         var lat = parseFloat(this.value);
         var lng = parseFloat(document.getElementById('longitude').value);
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            setMarkerPosition(lat, lng, false);
+            setMarkerPosition(lat, lng, false, false);
         }
     });
     
@@ -561,7 +566,7 @@
         var lat = parseFloat(document.getElementById('latitude').value);
         var lng = parseFloat(this.value);
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            setMarkerPosition(lat, lng, false);
+            setMarkerPosition(lat, lng, false, false);
         }
     });
     

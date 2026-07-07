@@ -169,12 +169,43 @@ class Geojson extends BaseController
                     $relativePath = str_replace('\\', '/', ltrim(str_replace($geojsonDir, '', $fileInfo->getPathname()), DIRECTORY_SEPARATOR));
                     $relativePath = ltrim($relativePath, '/');
                     $filePath = 'geojson/' . $relativePath;
+                    $fullPath = ROOTPATH . 'public/' . $filePath;
                     $exists = $model->where('file_path', $filePath)->first();
+
+                    $featureCount = 0;
+                    $geometryTypes = [];
+
+                    if (is_file($fullPath)) {
+                        $content = @file_get_contents($fullPath);
+                        if ($content !== false) {
+                            $json = json_decode($content, true);
+                            if (is_array($json)) {
+                                if (($json['type'] ?? null) === 'FeatureCollection') {
+                                    $features = $json['features'] ?? [];
+                                    $featureCount = count($features);
+                                    foreach ($features as $feature) {
+                                        $geometryType = $feature['geometry']['type'] ?? 'Unknown';
+                                        if (!in_array($geometryType, $geometryTypes, true)) {
+                                            $geometryTypes[] = $geometryType;
+                                        }
+                                    }
+                                } elseif (($json['type'] ?? null) === 'Feature') {
+                                    $featureCount = 1;
+                                    $geometryType = $json['geometry']['type'] ?? 'Unknown';
+                                    $geometryTypes[] = $geometryType;
+                                } elseif (($json['type'] ?? null) !== null) {
+                                    $geometryTypes[] = $json['type'];
+                                }
+                            }
+                        }
+                    }
 
                     $scannedFiles[] = [
                         'filename' => $relativePath,
                         'file_path' => $filePath,
                         'status' => $exists ? 'exists' : 'new',
+                        'feature_count' => $featureCount,
+                        'geometry_types' => $geometryTypes,
                     ];
 
                     if (!$exists) {
