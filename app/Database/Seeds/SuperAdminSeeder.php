@@ -19,7 +19,7 @@ class SuperAdminSeeder extends Seeder
         $userModel->insert([
             'username' => 'superadmin',
             'email' => 'superadmin@example.com',
-            'password' => 'superadmin123',
+            'password' => password_hash('superadmin123', PASSWORD_DEFAULT),
             'nama_lengkap' => 'Super Admin',
             'role' => 'admin_super',
             'school_id' => null,

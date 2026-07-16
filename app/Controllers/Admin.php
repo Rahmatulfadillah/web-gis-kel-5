@@ -533,7 +533,7 @@ class Admin extends BaseController
         $data = [
             'username' => $this->request->getPost('username'),
             'email' => $this->request->getPost('email'),
-            'password' => $this->request->getPost('password'),
+            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
             'role' => $this->request->getPost('role'),
             'school_id' => $this->request->getPost('role') === 'admin_sekolah' ? $this->request->getPost('school_id') : null,
@@ -582,7 +582,8 @@ class Admin extends BaseController
             return redirect()->to('/admin/users')->with('error', 'Tidak dapat mereset password super admin!');
         }
         
-        $model->update($id, ['password' => 'password123']);
+        // Reset password ke 'admin123' ter-hash
+        $model->update($id, ['password' => password_hash('admin123', PASSWORD_DEFAULT)]);
         $this->logActivity(
             'reset_password',
             'user',
@@ -590,7 +591,7 @@ class Admin extends BaseController
             'Mereset password user ' . ($user['username'] ?? 'unknown')
         );
         
-        return redirect()->to('/admin/users')->with('success', 'Password user berhasil direset menjadi "password123"');
+        return redirect()->to('/admin/users')->with('success', 'Password user berhasil direset menjadi "admin123"');
     }
 
     public function hapusAdmin($id)
@@ -726,8 +727,15 @@ class Admin extends BaseController
         $newPassword = $this->request->getPost('new_password');
         $confirmPassword = $this->request->getPost('confirm_password');
         
-        // Validasi password lama
-        if ($user['password'] !== $oldPassword) {
+        // Validasi password lama (dengan fallback plaintext)
+        $isPasswordCorrect = false;
+        if (password_verify($oldPassword, $user['password'])) {
+            $isPasswordCorrect = true;
+        } elseif ($user['password'] === $oldPassword) {
+            $isPasswordCorrect = true;
+        }
+
+        if (!$isPasswordCorrect) {
             return redirect()->back()->with('error', 'Password lama tidak sesuai!');
         }
         
@@ -741,8 +749,8 @@ class Admin extends BaseController
             return redirect()->back()->with('error', 'Konfirmasi password tidak sesuai!');
         }
         
-        // Update password
-        if ($userModel->update($userId, ['password' => $newPassword])) {
+        // Update password (hash password baru)
+        if ($userModel->update($userId, ['password' => password_hash($newPassword, PASSWORD_DEFAULT)])) {
             $this->logActivity(
                 'update',
                 'user',

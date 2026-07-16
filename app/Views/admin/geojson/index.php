@@ -24,10 +24,12 @@
         /* Sidebar */
         .sidebar { 
             background: linear-gradient(135deg, #2563eb, #1d4ed8); 
-            min-height: 100vh; 
+            min-height: calc(100vh - 70px); 
             color: white; 
             position: sticky; 
-            top: 0; 
+            top: 70px; 
+            height: calc(100vh - 70px); 
+            overflow-y: auto; 
         }
         
         .sidebar .nav-link { 

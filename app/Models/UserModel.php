@@ -27,7 +27,17 @@ class UserModel extends Model
             return false;
         }
         
-        if ($user['password'] == $password) {
+        // Cek dengan password_verify
+        if (password_verify($password, $user['password'])) {
+            return $user;
+        }
+        
+        // Fallback untuk backward compatibility: jika di DB masih plaintext
+        if ($user['password'] === $password) {
+            // Otomatis hash dan update password di DB agar selanjutnya ter-hash
+            $newHash = password_hash($password, PASSWORD_DEFAULT);
+            $this->update($user['id'], ['password' => $newHash]);
+            $user['password'] = $newHash;
             return $user;
         }
         
