@@ -30,7 +30,7 @@ class Auth extends BaseController
         if ($user) {
             // Jika yang login adalah superadmin, cek apakah sudah ada superadmin lain yang sedang login
             if ($user['role'] === 'admin_super') {
-                if ($model->isSuperAdminLoggedIn()) {
+                if ($model->isSuperAdminLoggedIn($user['id'])) {
                     return redirect()->back()->with('error', 'Superadmin sedang aktif. Login tidak diizinkan sampai superadmin saat ini logout.');
                 }
             }

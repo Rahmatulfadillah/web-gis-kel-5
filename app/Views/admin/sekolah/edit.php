@@ -335,10 +335,10 @@
                                 <div id="map"></div>
                                 
                                 <div class="mode-panel">
-                                    <button id="btnStandard" class="active" onclick="switchMode('standard', this)">
+                                    <button type="button" id="btnStandard" class="active" onclick="switchMode('standard', this)">
                                         <i class="fas fa-map me-2"></i> Mode Standar
                                     </button>
-                                    <button id="btnSatellite" onclick="switchMode('satellite', this)">
+                                    <button type="button" id="btnSatellite" onclick="switchMode('satellite', this)">
                                         <i class="fas fa-satellite-dish me-2"></i> Mode Satelit
                                     </button>
                                 </div>
@@ -430,11 +430,11 @@
         zoomControl: true
     });
     
-    // Layer 1: STANDAR (CARTO Light)
-    var standardLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap & CARTO',
+    // Layer 1: STANDAR (CARTO Voyager - lebih berwarna dan detail)
+    var standardLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
-        maxZoom: 11
+        maxZoom: 19
     }).addTo(map);
 
     var activeGeojsonConfigs = <?= json_encode($geojson_layers ?? []) ?>;
@@ -442,10 +442,11 @@
     var activeGeojsonLoaded = activeGeojsonConfigs.length === 0;
     var lastValidLatLng = L.latLng(defaultLat, defaultLng);
     
-    // Layer 2: SATELIT (Esri ArcGIS - Lebih stabil tanpa API Key)
-    var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri',
-        maxZoom: 19
+    // Layer 2: SATELIT (Google Maps Hybrid - lebih bagus dan detail)
+    var satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Maps',
+        maxZoom: 20,
+        subdomains: ['mt0','mt1','mt2','mt3']
     });
 
     // ============================================

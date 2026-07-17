@@ -178,16 +178,20 @@ class Admin extends BaseController
         if ($role === 'admin_sekolah') {
             $schoolId = $userModel->getSekolahByAdmin($userId);
             $data['total_sekolah'] = $schoolId ? 1 : 0;
-            $data['total_tk'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'TK')->countAllResults();
-            $data['total_sd'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'SD')->countAllResults();
-            $data['total_smp'] = $sekolahModel->where('id', $schoolId)->where('jenjang', 'SMP')->countAllResults();
             $data['is_super_admin'] = false;
+            // Ambil data sekolah lengkap untuk ditampilkan di dashboard
+            $data['sekolah_detail'] = $schoolId ? $sekolahModel->find($schoolId) : null;
+            // Ambil geojson layers untuk peta
+            $geojsonModel = new GeojsonConfigModel();
+            $data['geojson_layers'] = $geojsonModel->where('is_active', 1)->orderBy('nama')->findAll();
         } else {
             $data['total_sekolah'] = $sekolahModel->countAll();
             $data['total_tk'] = $sekolahModel->where('jenjang', 'TK')->countAllResults();
             $data['total_sd'] = $sekolahModel->where('jenjang', 'SD')->countAllResults();
             $data['total_smp'] = $sekolahModel->where('jenjang', 'SMP')->countAllResults();
             $data['is_super_admin'] = true;
+            $data['sekolah_detail'] = null;
+            $data['geojson_layers'] = [];
         }
         
         $data['nama'] = session()->get('nama_lengkap');

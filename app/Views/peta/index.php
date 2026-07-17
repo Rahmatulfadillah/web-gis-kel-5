@@ -483,27 +483,22 @@
             <div class="info-panel animate-in" style="animation-delay: 0.2s;">
                 <h5 class="info-title"><i class="fas fa-filter me-2 text-primary"></i>Filter Sekolah</h5>
                 <div class="filter-group">
-                  <div class="filter-group">
-    <div class="mb-2">
-        <button class="btn btn-filter active w-100" data-filter="all">
-            <i class="fas fa-globe me-1"></i> Semua
-        </button>
-    </div>
-    <div class="d-flex gap-2">
-        <button class="btn btn-filter flex-fill" data-filter="TK">
-            <i class="fas fa-school me-1"></i> TK
-        </button>
-
-        <button class="btn btn-filter flex-fill" data-filter="SD">
-            <i class="fas fa-school me-1"></i> SD
-        </button>
-
-        <button class="btn btn-filter flex-fill" data-filter="SMP">
-            <i class="fas fa-school me-1"></i> SMP
-        </button>
-    </div>
-
-</div>
+                    <div class="mb-2">
+                        <button class="btn btn-filter active w-100" data-filter="all">
+                            <i class="fas fa-globe me-1"></i> Semua
+                        </button>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-filter flex-fill" data-filter="TK">
+                            <i class="fas fa-school me-1"></i> TK
+                        </button>
+                        <button class="btn btn-filter flex-fill" data-filter="SD">
+                            <i class="fas fa-school me-1"></i> SD
+                        </button>
+                        <button class="btn btn-filter flex-fill" data-filter="SMP">
+                            <i class="fas fa-school me-1"></i> SMP
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -557,8 +552,8 @@ function initMap() {
         position: 'topright'
     }).addTo(map);
     
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap & CARTO',
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19
     }).addTo(map);
