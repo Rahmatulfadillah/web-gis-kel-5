@@ -31,7 +31,12 @@
                 <!-- Dropdown Admin -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i> <?= session()->get('nama_lengkap') ?>
+                        <?php if(session()->get('foto') && file_exists(FCPATH . 'uploads/foto_profil/' . session()->get('foto'))): ?>
+                            <img src="<?= base_url('uploads/foto_profil/' . session()->get('foto')) ?>" 
+                                 style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #2563eb;margin-right:6px;" alt="foto">
+                        <?php else: ?>
+                            <i class="fas fa-user-circle me-1"></i>
+                        <?php endif; ?> <?= session()->get('nama_lengkap') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                        <li><a class="dropdown-item" href="<?= base_url('/admin/profil') ?>"><i class="fas fa-user-circle me-2"></i>Profil Saya</a></li>
@@ -91,10 +96,10 @@
                 <div class="profile-card">
                     <div class="row">
                         <div class="col-md-4 text-center">
-                            <?php if($user['foto'] && file_exists('uploads/foto_profil/' . $user['foto'])): ?>
-                                <img src="<?= base_url('uploads/foto_profil/' . $user['foto']) ?>" class="profile-img mb-3" alt="Profile">
+                            <?php if(!empty($user['foto']) && file_exists(FCPATH . 'uploads/foto_profil/' . $user['foto'])): ?>
+                                <img src="<?= base_url('uploads/foto_profil/' . $user['foto']) ?>" class="profile-img mb-3" alt="Foto Profil">
                             <?php else: ?>
-                                <div class="profile-img bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;">
+                                <div class="profile-img d-flex align-items-center justify-content-center mx-auto mb-3" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
                                     <i class="fas fa-user fa-4x text-white"></i>
                                 </div>
                             <?php endif; ?>

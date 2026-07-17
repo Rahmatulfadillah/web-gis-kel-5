@@ -138,7 +138,12 @@
                 <!-- Dropdown Admin -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i> <?= esc(session()->get('nama_lengkap')) ?>
+                        <?php if(session()->get('foto') && file_exists(FCPATH . 'uploads/foto_profil/' . session()->get('foto'))): ?>
+                            <img src="<?= base_url('uploads/foto_profil/' . session()->get('foto')) ?>" 
+                                 style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #2563eb;margin-right:6px;" alt="foto">
+                        <?php else: ?>
+                            <i class="fas fa-user-circle me-1"></i>
+                        <?php endif; ?> <?= esc(session()->get('nama_lengkap')) ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="<?= base_url('/admin/profil') ?>"><i class="fas fa-user-circle me-2"></i>Profil Saya</a></li>

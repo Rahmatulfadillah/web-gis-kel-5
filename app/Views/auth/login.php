@@ -121,6 +121,30 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(37,99,235,0.3);
         }
+
+        .btn-back {
+            display: block;
+            width: 100%;
+            padding: 11px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            background: transparent;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 12px;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-back:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: rgba(37,99,235,0.05);
+            transform: translateY(-1px);
+        }
         
         .alert {
             border-radius: 10px;
@@ -208,6 +232,10 @@
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
             </form>
+
+            <a href="<?= base_url('/') ?>" class="btn-back">
+                <i class="fas fa-arrow-left me-2"></i>Kembali ke Beranda
+            </a>
             
             <hr>
             

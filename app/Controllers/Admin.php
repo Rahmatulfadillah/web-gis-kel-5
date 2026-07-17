@@ -803,6 +803,9 @@ class Admin extends BaseController
         
         // Update database
         if ($userModel->update($userId, ['foto' => $fotoName])) {
+            // Update session agar foto langsung tampil di navbar
+            session()->set('foto', $fotoName);
+
             $this->logActivity(
                 'update',
                 'user',

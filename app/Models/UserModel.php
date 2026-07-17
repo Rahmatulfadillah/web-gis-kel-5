@@ -10,7 +10,7 @@ class UserModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'username', 'email', 'password', 'nama_lengkap', 
-        'role', 'school_id', 'foto', 'last_login', 'is_active'
+        'role', 'school_id', 'foto', 'last_login', 'is_active', 'is_logged_in'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
@@ -48,13 +48,26 @@ class UserModel extends Model
         return $user && $user['role'] === 'admin_sekolah';
     }
     
-    // Get sekolah untuk admin sekolah
-    public function getSekolahByAdmin($userId)
+    // Cek apakah ada superadmin yang sedang aktif login
+    public function isSuperAdminLoggedIn()
     {
-        $user = $this->find($userId);
-        if ($user && $user['role'] === 'admin_sekolah') {
-            return $user['school_id'];
-        }
-        return null;
+        $result = $this->where('role', 'admin_super')
+                       ->where('is_logged_in', 1)
+                       ->countAllResults();
+        return $result > 0;
     }
-}
+
+    // Set status is_logged_in untuk user tertentu
+    public function setSuperAdminLoginStatus($userId, $status)
+    {
+        return $this->update($userId, ['is_logged_in' => $status]);
+    }
+
+    // Reset semua is_logged_in superadmin (keamanan ekstra)
+    public function resetAllSuperAdminSessions()
+    {
+        return $this->where('role', 'admin_super')
+                    ->set(['is_logged_in' => 0])
+                    ->update();
+    }
+}
