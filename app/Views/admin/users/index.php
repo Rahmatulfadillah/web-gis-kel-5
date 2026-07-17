@@ -67,7 +67,7 @@
                                     <td>
                                         <?php if ($user['role'] !== 'admin_super') : ?>
                                             <div class="d-flex gap-2 flex-wrap">
-                                                <a href="<?= base_url('/admin/users/reset/' . $user['id']) ?>" class="btn btn-sm btn-warning" onclick="return confirm('Reset password akun ini menjadi password123?')">
+                                                <a href="<?= base_url('/admin/users/reset/' . $user['id']) ?>" class="btn btn-sm btn-warning" onclick="return confirm('Reset password akun ini menjadi admin123?')">
                                                     <i class="fas fa-key me-1"></i>Reset Password
                                                 </a>
                                                 <a href="<?= base_url('/admin/users/hapus/' . $user['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus akun admin ini?')">

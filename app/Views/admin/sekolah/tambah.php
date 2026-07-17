@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: #f0f8ff; }
         
-        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: 100vh; color: white; position: sticky; top: 0; }
+        .sidebar { background: linear-gradient(135deg, #2563eb, #1d4ed8); min-height: calc(100vh - 70px); color: white; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
         .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; border-radius: 10px; transition: all 0.3s; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2); color: white; }
         

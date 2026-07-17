@@ -24,9 +24,13 @@
         /* Sidebar */
         .sidebar { 
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
-            min-height: 185vh; 
+            min-height: calc(100vh - 70px); 
             color: white; 
             transition: transform 0.3s ease;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
         }
         
         .sidebar .nav-link { 
