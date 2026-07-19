@@ -166,6 +166,8 @@
                         <div class="stat-icon"><i class="fas fa-building text-primary"></i></div>
                     </div></div>
                 </div>
+                
+
             </div>
 
             <?php else: ?>

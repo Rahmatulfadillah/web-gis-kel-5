@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peta Sekolah - Kecamatan Lintau Buo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -446,6 +445,7 @@
             <span class="stats-badge"><i class="fas fa-seedling text-success"></i> TK: <span id="tkCount" class="fw-bold">0</span></span>
             <span class="stats-badge"><i class="fas fa-building text-danger"></i> SD: <span id="sdCount" class="fw-bold">0</span></span>
             <span class="stats-badge"><i class="fas fa-building text-primary"></i> SMP: <span id="smpCount" class="fw-bold">0</span></span>
+
         </div>
     </div>
 </div>
@@ -613,7 +613,6 @@ function buildPopupContent(sekolah) {
     const color = getMarkerColor(jenjang);
     const foto = sekolah.foto ? `<?= base_url('uploads/sekolah') ?>/${escapeHtml(sekolah.foto)}` : '<?= base_url('uploads/default-school.png') ?>';
     const detailUrl = sekolah.id ? `<?= base_url('sekolah') ?>/${sekolah.id}` : '#';
-    const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
     return `
         <div class="school-popup">
@@ -648,7 +647,6 @@ function buildPopupContent(sekolah) {
                 </div>
                 <div class="school-popup__actions">
                     <a class="school-popup__btn" href="${detailUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i>Detail Sekolah</a>
-                    <a class="school-popup__btn secondary" href="${mapsUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-location-dot"></i>Google Maps</a>
                 </div>
             </div>
         </div>
