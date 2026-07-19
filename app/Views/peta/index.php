@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -40,12 +45,14 @@
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--primary) !important;
+            font-family: 'Poppins', sans-serif;
         }
         .nav-link {
             font-weight: 500;
             margin: 0 8px;
             color: var(--text-dark) !important;
             transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
         .nav-link:hover, .nav-link.active {
             color: var(--primary) !important;
@@ -55,6 +62,7 @@
             box-shadow: var(--shadow-lg);
             border: none;
             margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
         }
         .dropdown-item:hover {
             background: #eff6ff;
@@ -95,12 +103,14 @@
             position: relative;
             z-index: 1;
             text-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            font-family: 'Poppins', sans-serif;
         }
         .page-header p {
             color: rgba(255,255,255,0.9);
             position: relative;
             z-index: 1;
             font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
         }
         .page-header .stats-badge {
             background: rgba(255,255,255,0.2);
@@ -115,6 +125,7 @@
             color: white;
             position: relative;
             z-index: 1;
+            font-family: 'Poppins', sans-serif;
         }
         .page-header .stats-badge i {
             color: rgba(255,255,255,0.9);
@@ -142,6 +153,7 @@
         .map-card .card-header h5 {
             font-weight: 700;
             color: var(--text-dark);
+            font-family: 'Poppins', sans-serif;
         }
         
         #map {
@@ -174,6 +186,7 @@
         .sekolah-list-card .card-header h5 {
             font-weight: 700;
             color: var(--text-dark);
+            font-family: 'Poppins', sans-serif;
         }
         
         .sekolah-list-card::-webkit-scrollbar {
@@ -219,10 +232,12 @@
             color: var(--text-dark);
             margin-bottom: 4px;
             font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
         }
         .school-address {
             font-size: 0.75rem;
             color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
         }
         .badge-sd {
             background: linear-gradient(135deg, #10b981, #34d399);
@@ -247,6 +262,9 @@
             color: white;
             margin-top: 50px;
         }
+        footer p {
+            font-family: 'Poppins', sans-serif;
+        }
         
         .stats-badge {
             background: #eff6ff;
@@ -259,6 +277,7 @@
             color: var(--text-dark);
             border: 1px solid rgba(37,99,235,0.1);
             transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
         .stats-badge:hover {
             transform: translateY(-2px);
@@ -276,6 +295,7 @@
             transition: all 0.3s;
             border: 2px solid #e2e8f0;
             background: transparent;
+            font-family: 'Poppins', sans-serif;
         }
         .btn-filter:hover {
             border-color: var(--primary);
@@ -307,6 +327,7 @@
             padding-bottom: 10px;
             border-bottom: 2px solid var(--primary);
             display: inline-block;
+            font-family: 'Poppins', sans-serif;
         }
         
         .btn-fullscreen {
@@ -318,6 +339,7 @@
             color: white;
             transition: all 0.3s;
             font-size: 0.85rem;
+            font-family: 'Poppins', sans-serif;
         }
         .btn-fullscreen:hover {
             transform: scale(1.05);
@@ -341,15 +363,15 @@
         .school-popup { min-width: 320px; max-width: 390px; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.12); }
         .school-popup__image { width: 100%; height: 160px; object-fit: cover; display: block; background: linear-gradient(135deg, #e0f2fe, #f8fafc); }
         .school-popup__header { padding: 14px 16px 12px; color: white; background: linear-gradient(135deg, #2563eb, #3b82f6); }
-        .school-popup__title { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .school-popup__title { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; }
         .school-popup__badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-        .school-popup__badge { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.22); color: #fff; }
+        .school-popup__badge { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.22); color: #fff; font-family: 'Poppins', sans-serif; }
         .school-popup__body { padding: 14px 16px 16px; background: #fff; }
         .school-popup__section { margin-bottom: 10px; }
-        .school-popup__label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: #2563eb; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
-        .school-popup__text { font-size: 0.85rem; color: #334155; line-height: 1.45; }
+        .school-popup__label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: #2563eb; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; font-family: 'Poppins', sans-serif; }
+        .school-popup__text { font-size: 0.85rem; color: #334155; line-height: 1.45; font-family: 'Poppins', sans-serif; }
         .school-popup__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .school-popup__btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .school-popup__btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; background: linear-gradient(135deg, #2563eb, #3b82f6); font-family: 'Poppins', sans-serif; }
         .school-popup__btn.secondary { background: linear-gradient(135deg, #0f766e, #14b8a6); }
         .school-popup__btn:hover { color: #fff; opacity: 0.95; }
         
@@ -366,6 +388,7 @@
             height: 38px !important;
             line-height: 38px !important;
             transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
         .leaflet-control-zoom a:hover {
             background: var(--primary) !important;
@@ -467,12 +490,12 @@
         <div class="col-lg-4">
             <div class="info-panel animate-in" style="animation-delay: 0.1s;">
                 <h5 class="info-title"><i class="fas fa-info-circle me-2 text-primary"></i>Informasi</h5>
-                <p class="small text-muted mb-0">
+                <p class="small text-muted mb-0" style="font-family: 'Poppins', sans-serif;">
                     <i class="fas fa-mouse-pointer me-1"></i> Klik marker untuk detail sekolah.<br>
                     <i class="fas fa-list me-1"></i> Klik daftar sekolah untuk zoom.
                 </p>
                 <hr class="my-3">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" style="font-family: 'Poppins', sans-serif;">
                      <div><i class="fas fa-circle text-success me-1"></i> TK <span class="badge bg-success ms-1">Hijau</span></div>
                     <div><i class="fas fa-circle text-danger me-1"></i> SD <span class="badge bg-danger ms-1">merah</span></div>
                     <div><i class="fas fa-circle text-primary me-1"></i> SMP <span class="badge bg-primary ms-1">Biru</span></div>
@@ -508,7 +531,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div id="sekolahList" class="sekolah-list">
-                        <div class="text-center p-4 text-muted">
+                        <div class="text-center p-4 text-muted" style="font-family: 'Poppins', sans-serif;">
                             <i class="fas fa-spinner fa-spin me-2"></i>Memuat data...
                         </div>
                     </div>
@@ -520,9 +543,9 @@
 
 <footer>
     <div class="container text-center">
-        <p class="mb-1 small">&copy; <?= date('Y') ?> EduMap Tanah Datar</p>
-        <p class="small text-white-50">Dinas Pendidikan Tanah Datar</p>
-        <p class="small text-white-50 mt-2">
+        <p class="mb-1 small" style="font-family: 'Poppins', sans-serif;">&copy; <?= date('Y') ?> EduMap Tanah Datar</p>
+        <p class="small text-white-50" style="font-family: 'Poppins', sans-serif;">Dinas Pendidikan Tanah Datar</p>
+        <p class="small text-white-50 mt-2" style="font-family: 'Poppins', sans-serif;">
             <i class="fas fa-code me-1"></i> Dibangun dengan <i class="fas fa-heart text-danger"></i> untuk Pendidikan
         </p>
     </div>
@@ -656,7 +679,7 @@ function buildPopupContent(sekolah) {
 function displaySekolahList(data) {
     const container = document.getElementById('sekolahList');
     if (data.length === 0) {
-        container.innerHTML = '<div class="text-center p-4 text-muted"><i class="fas fa-school me-1"></i>Belum ada data sekolah</div>';
+        container.innerHTML = '<div class="text-center p-4 text-muted" style="font-family: Poppins, sans-serif;"><i class="fas fa-school me-1"></i>Belum ada data sekolah</div>';
         return;
     }
     let html = '';
